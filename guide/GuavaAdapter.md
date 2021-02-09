@@ -44,7 +44,7 @@ Now suppose we want to find a [minimum vertex cover](https://brilliant.org/wiki/
 ```java
         VertexCoverAlgorithm<String> alg = new RecursiveExactVCImpl<>(jgrapht);
         VertexCoverAlgorithm.VertexCover<String> cover = alg.getVertexCover();
-        Set<String> expectedCover = new HashSet<String>(Arrays.asList("um", "ml", "mr", "lm"));
+        Set<String> expectedCover = Set.of("um", "ml", "mr", "lm");
         assertEquals(expectedCover, cover);
 ```
 

@@ -16,6 +16,7 @@ org.jgrapht.alg.independentset
 org.jgrapht.alg.interfaces
 org.jgrapht.alg.isomorphism
 org.jgrapht.alg.lca
+org.jgrapht.alg.linkprediction
 org.jgrapht.alg.matching
 org.jgrapht.alg.matching.blossom.v5
 org.jgrapht.alg.partition
@@ -32,6 +33,7 @@ org.jgrapht.alg.vertexcover
 org.jgrapht.alg.vertexcover.util
 org.jgrapht.event
 org.jgrapht.generate
+org.jgrapht.generate.netgen
 org.jgrapht.graph
 org.jgrapht.graph.builder
 org.jgrapht.graph.concurrent
