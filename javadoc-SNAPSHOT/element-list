@@ -16,12 +16,14 @@ org.jgrapht.alg.independentset
 org.jgrapht.alg.interfaces
 org.jgrapht.alg.isomorphism
 org.jgrapht.alg.lca
+org.jgrapht.alg.linkprediction
 org.jgrapht.alg.matching
 org.jgrapht.alg.matching.blossom.v5
 org.jgrapht.alg.partition
 org.jgrapht.alg.planar
 org.jgrapht.alg.scoring
 org.jgrapht.alg.shortestpath
+org.jgrapht.alg.similarity
 org.jgrapht.alg.spanning
 org.jgrapht.alg.tour
 org.jgrapht.alg.transform
@@ -31,6 +33,7 @@ org.jgrapht.alg.vertexcover
 org.jgrapht.alg.vertexcover.util
 org.jgrapht.event
 org.jgrapht.generate
+org.jgrapht.generate.netgen
 org.jgrapht.graph
 org.jgrapht.graph.builder
 org.jgrapht.graph.concurrent
@@ -59,3 +62,6 @@ org.jgrapht.nio.tsplib
 module:org.jgrapht.opt
 org.jgrapht.opt.graph.fastutil
 org.jgrapht.opt.graph.sparse
+module:org.jgrapht.unimi.dsi
+org.jgrapht.sux4j
+org.jgrapht.webgraph
