@@ -12,9 +12,9 @@ amount of memory. You can download ready-made graphs in this form from the
 graphs using the instructions provided in the [package overview](https://webgraph.di.unimi.it/docs/).
 
 For example, the memory footprint of a [snapshot of web sites from Indochina in 2004](http://law.di.unimi.it/webdata/indochina-2004/)
-with 200 million edges would be of a few gigabytes in a trivial representation, it is of 260MB in JGraphT's
+with 200 million edges would be a few gigabytes in a trivial representation, it is 260MB in JGraphT's
 [sparse representation](https://jgrapht.org/javadoc/org.jgrapht.opt/org/jgrapht/opt/graph/sparse/SparseIntDirectedGraph.html),
-but it is of just 59MB in WebGraph.
+but it is just 59MB in WebGraph.
 
 The adapters in the package
 [org.jgrapht.webgraph](https://jgrapht.org/javadoc/org.jgrapht.unimi.dsi/org/jgrapht/webgraph/package-summary.html)
@@ -23,7 +23,7 @@ make it possible to use graphs in WebGraph format in JGraphT.
 The typical use case for these adapters is:
 
 - You need a compact format (vertices will be just contiguous integers starting from zero).
-- The type of graph use are storing is compressible.
+- The type of graph you are storing is compressible.
 - You have metadata associated with the vertices, but not with the arcs.
 
 Such metadata can be easily stored in an array indexed by the vertices,
@@ -35,6 +35,8 @@ compact format, a succinct representation from the package
 [org.jgrapht.sux4j](https://jgrapht.org/javadoc/org.jgrapht.unimi.dsi/org/jgrapht/sux4j/package-summary.html)
 might be more appropriate, as those representation associate with
 each edge an integer in a contiguous range starting from zero.
+A separate [guide](Sux4JImplementations) is available for 
+succinct graph adapters.
 
 WebGraph has two versions: the standard version manages graph with
 at most 2<sup>31</sup> vertices, whereas the big version manages graphs with

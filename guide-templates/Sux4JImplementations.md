@@ -8,10 +8,10 @@ title: Sux4J-Based Implementations
 implementations of [succinct data structures](https://en.wikipedia.org/wiki/Succinct_data_structure)
 in Java. Such structures can be used to store graphs in a very compact form. For example,
 the memory footprint of the [English Wikipedia graph in 2013](http://law.di.unimi.it/webdata/enwiki-2013/)
-would be of a few gigabytes in a trivial object-based representation, it is of 1.6GB in JGraphT's
+would be a few gigabytes in a trivial object-based representation, it is 1.6GB in JGraphT's
 [sparse representation](https://jgrapht.org/javadoc/org.jgrapht.opt/org/jgrapht/opt/graph/sparse/SparseIntDirectedGraph.html),
-but it is of just 500MB in a succinct representation. The denser the graph, the more
-these differences will be marked.
+but it is just 500MB in a succinct representation. The denser the graph, the more
+marked these differences will be.
 
 The implementations in the package
 [org.jgrapht.sux4j](https://jgrapht.org/javadoc/org.jgrapht.unimi.dsi/org/jgrapht/sux4j/package-summary.html)
@@ -27,10 +27,11 @@ The typical use case for these adapters is:
 - Optionally, you need fast [adjacency tests](https://jgrapht.org/javadoc/org.jgrapht.core/org/jgrapht/Graph.html#containsEdge%28V,V%29).
 
 Such metadata can be easily stored in an array or list indexed by the vertices or
-the edges. If you have metadata on the vertices, only, or if your number
+the edges. If you have metadata on the vertices only, or if your number
 of vertices or edges does not satisfy the limitations above, a [WebGraph
 adapter](https://jgrapht.org/javadoc/org.jgrapht.unimi.dsi/org/jgrapht/webgraph/package-summary.html)
-might be more appopriate.
+might be more appropriate.  A separate [guide](WebGraphAdapters) is available for 
+WebGraph adapters.
 
 The two main implementations are [`SuccinctDirectedGraph`](https://jgrapht.org/javadoc/org.jgrapht.unimi.dsi/org/jgrapht/sux4j/SuccinctDirectedGraph.html)
 and [`SuccinctUndirectedGraph`](https://jgrapht.org/javadoc/org.jgrapht.unimi.dsi/org/jgrapht/sux4j/SuccinctUndirectedGraph.html).
@@ -47,7 +48,7 @@ bindings](https://pypi.org/project/jgrapht/)), there are classes
 and
 [`SuccinctIntUndirectedGraph`](https://jgrapht.org/javadoc/org.jgrapht.unimi.dsi/org/jgrapht/sux4j/SuccinctIntUndirectedGraph.html).
 These classes, however, are fairly slow due to the necessity of
-continuously remapping edges from pairs to indices. We suggest to use them
+continuously remapping edges from pairs to indices. We suggest that you use them
 only in the directed case and for outgoing arcs. However, in some cases
 they might provide the only representation of this type that is small
 enough to be loaded in main memory.

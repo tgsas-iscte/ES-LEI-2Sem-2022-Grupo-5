@@ -435,6 +435,14 @@ stays in sync with the Guava graph automatically, at no extra memory
 cost.  Now you can [run JGraphT algorithms](GuavaAdapter) on top of your Guava graph,
 or run our importers or exporters against it.
 
+### Adapters for Very Large Graphs
+
+If you are trying to run algorithms over very large graphs, the
+default JGraphT representations may eat up too much of your main
+memory.  Instead, you can use the adapters provided for
+[WebGraph](WebGraphAdapters) or
+[succinct graphs](Sux4JImplementations) (via Sux4J).
+
 ### JGraphX Adapter
 
 JGraphT also provides an adapter that lets you use a JGraphT graph
