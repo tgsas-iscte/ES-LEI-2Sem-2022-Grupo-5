@@ -2,4 +2,9 @@
 # generated output here.  Do NOT try to git add .md files here;
 # put them in ../guide-templates instead.
 
-*.md
+GuavaAdapter.md
+LabeledEdges.md
+VertexAndEdgeTypes.md
+HelloJGraphT.md
+UserOverview.md
+
