@@ -343,6 +343,17 @@ implements java.lang.Iterable&lt;V&gt;</pre>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>&nbsp;</code></td>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.util.function.Supplier,java.util.function.Supplier,boolean,boolean,org.jgrapht.graph.GraphSpecificsStrategy)">DirectedAcyclicGraph</a></span>&#8203;(java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>&gt;&nbsp;vertexSupplier,
+                    java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">E</a>&gt;&nbsp;edgeSupplier,
+                    boolean&nbsp;weighted,
+                    boolean&nbsp;allowMultipleEdges,
+                    <a href="GraphSpecificsStrategy.html" title="interface in org.jgrapht.graph">GraphSpecificsStrategy</a>&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>,&#8203;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">E</a>&gt;&nbsp;graphSpecificsStrategy)</code></th>
+<td class="colLast">
+<div class="block">Construct a directed acyclic graph.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>protected </code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.util.function.Supplier,java.util.function.Supplier,org.jgrapht.graph.DirectedAcyclicGraph.VisitedStrategyFactory,org.jgrapht.graph.DirectedAcyclicGraph.TopoOrderMap,boolean)">DirectedAcyclicGraph</a></span>&#8203;(java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>&gt;&nbsp;vertexSupplier,
                     java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">E</a>&gt;&nbsp;edgeSupplier,
@@ -353,7 +364,7 @@ implements java.lang.Iterable&lt;V&gt;</pre>
 <div class="block">Construct a directed acyclic graph.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected </code></td>
 <th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.util.function.Supplier,java.util.function.Supplier,org.jgrapht.graph.DirectedAcyclicGraph.VisitedStrategyFactory,org.jgrapht.graph.DirectedAcyclicGraph.TopoOrderMap,boolean,boolean)">DirectedAcyclicGraph</a></span>&#8203;(java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>&gt;&nbsp;vertexSupplier,
                     java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">E</a>&gt;&nbsp;edgeSupplier,
@@ -361,6 +372,19 @@ implements java.lang.Iterable&lt;V&gt;</pre>
                     <a href="DirectedAcyclicGraph.TopoOrderMap.html" title="interface in org.jgrapht.graph">DirectedAcyclicGraph.TopoOrderMap</a>&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>&gt;&nbsp;topoOrderMap,
                     boolean&nbsp;weighted,
                     boolean&nbsp;allowMultipleEdges)</code></th>
+<td class="colLast">
+<div class="block">Construct a directed acyclic graph.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected </code></td>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(java.util.function.Supplier,java.util.function.Supplier,org.jgrapht.graph.DirectedAcyclicGraph.VisitedStrategyFactory,org.jgrapht.graph.DirectedAcyclicGraph.TopoOrderMap,boolean,boolean,org.jgrapht.graph.GraphSpecificsStrategy)">DirectedAcyclicGraph</a></span>&#8203;(java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>&gt;&nbsp;vertexSupplier,
+                    java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">E</a>&gt;&nbsp;edgeSupplier,
+                    <a href="DirectedAcyclicGraph.VisitedStrategyFactory.html" title="interface in org.jgrapht.graph">DirectedAcyclicGraph.VisitedStrategyFactory</a>&nbsp;visitedStrategyFactory,
+                    <a href="DirectedAcyclicGraph.TopoOrderMap.html" title="interface in org.jgrapht.graph">DirectedAcyclicGraph.TopoOrderMap</a>&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>&gt;&nbsp;topoOrderMap,
+                    boolean&nbsp;weighted,
+                    boolean&nbsp;allowMultipleEdges,
+                    <a href="GraphSpecificsStrategy.html" title="interface in org.jgrapht.graph">GraphSpecificsStrategy</a>&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>,&#8203;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">E</a>&gt;&nbsp;graphSpecificsStrategy)</code></th>
 <td class="colLast">
 <div class="block">Construct a directed acyclic graph.</div>
 </td>
@@ -561,6 +585,28 @@ implements java.lang.Iterable&lt;V&gt;</pre>
 </dl>
 </li>
 </ul>
+<a id="&lt;init&gt;(java.util.function.Supplier,java.util.function.Supplier,boolean,boolean,org.jgrapht.graph.GraphSpecificsStrategy)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>DirectedAcyclicGraph</h4>
+<pre>public&nbsp;DirectedAcyclicGraph&#8203;(java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>&gt;&nbsp;vertexSupplier,
+                            java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">E</a>&gt;&nbsp;edgeSupplier,
+                            boolean&nbsp;weighted,
+                            boolean&nbsp;allowMultipleEdges,
+                            <a href="GraphSpecificsStrategy.html" title="interface in org.jgrapht.graph">GraphSpecificsStrategy</a>&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>,&#8203;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">E</a>&gt;&nbsp;graphSpecificsStrategy)</pre>
+<div class="block">Construct a directed acyclic graph.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>vertexSupplier</code> - the vertex supplier</dd>
+<dd><code>edgeSupplier</code> - the edge supplier</dd>
+<dd><code>weighted</code> - if true the graph will be weighted, otherwise not</dd>
+<dd><code>allowMultipleEdges</code> - if true the graph will allow multiple edges, otherwise not</dd>
+<dd><code>graphSpecificsStrategy</code> - strategy for constructing low-level graph specifics</dd>
+</dl>
+</li>
+</ul>
 <a id="&lt;init&gt;(java.util.function.Supplier,java.util.function.Supplier,org.jgrapht.graph.DirectedAcyclicGraph.VisitedStrategyFactory,org.jgrapht.graph.DirectedAcyclicGraph.TopoOrderMap,boolean)">
 <!--   -->
 </a>
@@ -588,7 +634,7 @@ implements java.lang.Iterable&lt;V&gt;</pre>
 <a id="&lt;init&gt;(java.util.function.Supplier,java.util.function.Supplier,org.jgrapht.graph.DirectedAcyclicGraph.VisitedStrategyFactory,org.jgrapht.graph.DirectedAcyclicGraph.TopoOrderMap,boolean,boolean)">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>DirectedAcyclicGraph</h4>
 <pre>protected&nbsp;DirectedAcyclicGraph&#8203;(java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>&gt;&nbsp;vertexSupplier,
@@ -608,6 +654,34 @@ implements java.lang.Iterable&lt;V&gt;</pre>
         the way this class stores the topological order.</dd>
 <dd><code>weighted</code> - if true the graph will be weighted, otherwise not</dd>
 <dd><code>allowMultipleEdges</code> - if true the graph will allow multiple edges, otherwise not</dd>
+</dl>
+</li>
+</ul>
+<a id="&lt;init&gt;(java.util.function.Supplier,java.util.function.Supplier,org.jgrapht.graph.DirectedAcyclicGraph.VisitedStrategyFactory,org.jgrapht.graph.DirectedAcyclicGraph.TopoOrderMap,boolean,boolean,org.jgrapht.graph.GraphSpecificsStrategy)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>DirectedAcyclicGraph</h4>
+<pre>protected&nbsp;DirectedAcyclicGraph&#8203;(java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>&gt;&nbsp;vertexSupplier,
+                               java.util.function.Supplier&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">E</a>&gt;&nbsp;edgeSupplier,
+                               <a href="DirectedAcyclicGraph.VisitedStrategyFactory.html" title="interface in org.jgrapht.graph">DirectedAcyclicGraph.VisitedStrategyFactory</a>&nbsp;visitedStrategyFactory,
+                               <a href="DirectedAcyclicGraph.TopoOrderMap.html" title="interface in org.jgrapht.graph">DirectedAcyclicGraph.TopoOrderMap</a>&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>&gt;&nbsp;topoOrderMap,
+                               boolean&nbsp;weighted,
+                               boolean&nbsp;allowMultipleEdges,
+                               <a href="GraphSpecificsStrategy.html" title="interface in org.jgrapht.graph">GraphSpecificsStrategy</a>&lt;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">V</a>,&#8203;<a href="DirectedAcyclicGraph.html" title="type parameter in DirectedAcyclicGraph">E</a>&gt;&nbsp;graphSpecificsStrategy)</pre>
+<div class="block">Construct a directed acyclic graph.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>vertexSupplier</code> - the vertex supplier</dd>
+<dd><code>edgeSupplier</code> - the edge supplier</dd>
+<dd><code>visitedStrategyFactory</code> - the visited strategy factory. Subclasses can change this
+        implementation to adjust the performance tradeoffs.</dd>
+<dd><code>topoOrderMap</code> - the topological order map. For performance reasons, subclasses can change
+        the way this class stores the topological order.</dd>
+<dd><code>weighted</code> - if true the graph will be weighted, otherwise not</dd>
+<dd><code>allowMultipleEdges</code> - if true the graph will allow multiple edges, otherwise not</dd>
+<dd><code>graphSpecificsStrategy</code> - strategy for constructing low-level graph specifics</dd>
 </dl>
 </li>
 </ul>
