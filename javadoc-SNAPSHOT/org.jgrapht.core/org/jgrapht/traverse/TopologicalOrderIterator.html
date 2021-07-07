@@ -162,8 +162,8 @@ extends <a href="AbstractGraphIterator.html" title="class in org.jgrapht.travers
  <p>
  The iterator crosses components but does not track them, it only tracks visited vertices. The
  iterator will detect (at some point) if the graph is not a directed acyclic graph and throw a
- <code>IllegalArgumentException</code>.
- 
+ <a href="NotDirectedAcyclicGraphException.html" title="class in org.jgrapht.traverse"><code>NotDirectedAcyclicGraphException</code></a>.
+
  <p>
  For this iterator to work correctly the graph must not be modified during iteration. Currently
  there are no means to ensure that, nor to fail-fast. The results of such modifications are
