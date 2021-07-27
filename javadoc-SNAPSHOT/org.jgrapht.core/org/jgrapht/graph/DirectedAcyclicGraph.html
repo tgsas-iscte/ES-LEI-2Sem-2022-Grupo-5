@@ -885,7 +885,8 @@ implements java.lang.Iterable&lt;V&gt;</pre>
 <dd>The newly created edge if added to the graph, otherwise <code>
  null</code>.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.IllegalArgumentException</code> - if the edge would induce a cycle in the graph</dd>
+<dd><code>java.lang.IllegalArgumentException</code> - if the vertex is not in the graph</dd>
+<dd><code><a href="GraphCycleProhibitedException.html" title="class in org.jgrapht.graph">GraphCycleProhibitedException</a></code> - if the vertex would induce a cycle in the graph</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../Graph.html#getEdgeSupplier()"><code>Graph.getEdgeSupplier()</code></a></dd>
 </dl>
@@ -933,7 +934,8 @@ implements java.lang.Iterable&lt;V&gt;</pre>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd><code>true</code> if this graph did not already contain the specified edge.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.lang.IllegalArgumentException</code> - if the edge would induce a cycle in the graph</dd>
+<dd><code>java.lang.IllegalArgumentException</code> - if the vertex is not in the graph</dd>
+<dd><code><a href="GraphCycleProhibitedException.html" title="class in org.jgrapht.graph">GraphCycleProhibitedException</a></code> - if the vertex would induce a cycle in the graph</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../Graph.html#addEdge(V,V)"><code>Graph.addEdge(Object, Object)</code></a>, 
 <a href="../Graph.html#getEdgeSupplier()"><code>Graph.getEdgeSupplier()</code></a></dd>
