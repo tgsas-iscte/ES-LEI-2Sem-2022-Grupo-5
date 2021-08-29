@@ -172,6 +172,13 @@ extends java.lang.Object</pre>
 <div class="block">Create a new instance.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(org.jgrapht.Graph,org.jgrapht.alg.shortestpath.PathValidator)">AllDirectedPaths</a></span>&#8203;(<a href="../../Graph.html" title="interface in org.jgrapht">Graph</a>&lt;<a href="AllDirectedPaths.html" title="type parameter in AllDirectedPaths">V</a>,&#8203;<a href="AllDirectedPaths.html" title="type parameter in AllDirectedPaths">E</a>&gt;&nbsp;graph,
+                <a href="PathValidator.html" title="interface in org.jgrapht.alg.shortestpath">PathValidator</a>&lt;<a href="AllDirectedPaths.html" title="type parameter in AllDirectedPaths">V</a>,&#8203;<a href="AllDirectedPaths.html" title="type parameter in AllDirectedPaths">E</a>&gt;&nbsp;pathValidator)</code></th>
+<td class="colLast">
+<div class="block">Create a new instance with given <code>pathValidator</code>.</div>
+</td>
+</tr>
 </table>
 </li>
 </ul>
@@ -237,7 +244,7 @@ extends java.lang.Object</pre>
 <a id="&lt;init&gt;(org.jgrapht.Graph)">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>AllDirectedPaths</h4>
 <pre>public&nbsp;AllDirectedPaths&#8203;(<a href="../../Graph.html" title="interface in org.jgrapht">Graph</a>&lt;<a href="AllDirectedPaths.html" title="type parameter in AllDirectedPaths">V</a>,&#8203;<a href="AllDirectedPaths.html" title="type parameter in AllDirectedPaths">E</a>&gt;&nbsp;graph)</pre>
@@ -245,6 +252,28 @@ extends java.lang.Object</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>graph</code> - the input graph</dd>
+<dt><span class="throwsLabel">Throws:</span></dt>
+<dd><code>java.lang.IllegalArgumentException</code> - if the graph is not directed</dd>
+</dl>
+</li>
+</ul>
+<a id="&lt;init&gt;(org.jgrapht.Graph,org.jgrapht.alg.shortestpath.PathValidator)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>AllDirectedPaths</h4>
+<pre>public&nbsp;AllDirectedPaths&#8203;(<a href="../../Graph.html" title="interface in org.jgrapht">Graph</a>&lt;<a href="AllDirectedPaths.html" title="type parameter in AllDirectedPaths">V</a>,&#8203;<a href="AllDirectedPaths.html" title="type parameter in AllDirectedPaths">E</a>&gt;&nbsp;graph,
+                        <a href="PathValidator.html" title="interface in org.jgrapht.alg.shortestpath">PathValidator</a>&lt;<a href="AllDirectedPaths.html" title="type parameter in AllDirectedPaths">V</a>,&#8203;<a href="AllDirectedPaths.html" title="type parameter in AllDirectedPaths">E</a>&gt;&nbsp;pathValidator)</pre>
+<div class="block">Create a new instance with given <code>pathValidator</code>.
+
+ If non-<code>null</code>, the <code>pathValidator</code> will be used while searching for paths, validating the addition
+ of any edge to a partial path. Zero-length paths will therefore not be subject to <code>pathValidator</code>;
+ length-1 paths will.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>graph</code> - the input graph</dd>
+<dd><code>pathValidator</code> - validator for computed paths; may be null</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.lang.IllegalArgumentException</code> - if the graph is not directed</dd>
 </dl>
