@@ -89,26 +89,8 @@ public class UndirectedModularityMeasurer<V, E>
             curPartition++;
         }
 
-        // count (weighted) edges inside each partition
-        double[] edgeWeightInPartition = new double[totalPartitions];
-        for (E e : graph.edgeSet()) {
-            V v = graph.getEdgeSource(e);
-            V u = graph.getEdgeTarget(e);
-            Integer pv = vertexPartition.get(v);
-            if (pv == null) {
-                throw new IllegalArgumentException(INVALID_PARTITION_OF_VERTICES);
-            }
-            Integer pu = vertexPartition.get(u);
-            if (pu == null) {
-                throw new IllegalArgumentException(INVALID_PARTITION_OF_VERTICES);
-            }
-            if (pv.intValue() == pu.intValue()) {
-                // same partition
-                edgeWeightInPartition[pv] += graph.getEdgeWeight(e);
-            }
-        }
-
-        // compute modularity summing over partitions
+        double[] edgeWeightInPartition = edgeWeightInPartition(totalPartitions, vertexPartition);
+		// compute modularity summing over partitions
         double mod = 0d;
         for (int p = 0; p < totalPartitions; p++) {
             double expectedEdgeWeightInPartition =
@@ -119,6 +101,27 @@ public class UndirectedModularityMeasurer<V, E>
 
         return mod;
     }
+
+	private double[] edgeWeightInPartition(int totalPartitions, Map<V, Integer> vertexPartition)
+			throws IllegalArgumentException {
+		double[] edgeWeightInPartition = new double[totalPartitions];
+		for (E e : graph.edgeSet()) {
+			V v = graph.getEdgeSource(e);
+			V u = graph.getEdgeTarget(e);
+			Integer pv = vertexPartition.get(v);
+			if (pv == null) {
+				throw new IllegalArgumentException(INVALID_PARTITION_OF_VERTICES);
+			}
+			Integer pu = vertexPartition.get(u);
+			if (pu == null) {
+				throw new IllegalArgumentException(INVALID_PARTITION_OF_VERTICES);
+			}
+			if (pv.intValue() == pu.intValue()) {
+				edgeWeightInPartition[pv] += graph.getEdgeWeight(e);
+			}
+		}
+		return edgeWeightInPartition;
+	}
 
     /**
      * Pre-compute vertex (weighted) degrees.
