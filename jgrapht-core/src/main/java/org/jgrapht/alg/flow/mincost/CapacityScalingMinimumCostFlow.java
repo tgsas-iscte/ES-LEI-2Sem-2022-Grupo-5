@@ -367,8 +367,8 @@ public class CapacityScalingMinimumCostFlow<V, E>
 			Graph<V, E> graph, int i, E edge) {
 		Node node = nodeMap.get(graph.getEdgeSource(edge));
 		Node opposite = nodeMap.get(graph.getEdgeTarget(edge));
-		int upperCap = problem.getArcCapacityUpperBounds().apply(edge);
-		int lowerCap = problem.getArcCapacityLowerBounds().apply(edge);
+		int upperCap = 0; //problem.getArcCapacityUpperBounds().apply(edge);
+		int lowerCap = 0; //problem.getArcCapacityLowerBounds().apply(edge);
 		double cost = graph.getEdgeWeight(edge);
 		node(i, node, opposite, upperCap, lowerCap, cost);
 		return opposite;
