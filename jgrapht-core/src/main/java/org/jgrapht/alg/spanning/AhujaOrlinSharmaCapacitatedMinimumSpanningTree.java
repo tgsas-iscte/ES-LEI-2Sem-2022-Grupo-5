@@ -384,20 +384,8 @@ public class AhujaOrlinSharmaCapacitatedMinimumSpanningTree<V, E>
 
         Iterator<Pair<Integer, ImprovementGraphVertexType>> it = cycle.getVertexList().iterator();
         if (it.hasNext()) {
-            Pair<Integer, ImprovementGraphVertexType> cur = it.next();
-            Integer firstLabel;
-            switch (cur.getSecond()) {
-            case SINGLE:
-                firstLabel =
-                    currentSolution.getLabel(improvementGraphVertexMapping.get(cur.getFirst()));
-                break;
-            case SUBTREE:
-                firstLabel =
-                    currentSolution.getLabel(improvementGraphVertexMapping.get(cur.getFirst()));
-                break;
-            default:
-                firstLabel = -1;
-            }
+            Integer firstLabel = firstLabel(currentSolution, improvementGraphVertexMapping, it);
+			Pair<Integer, ImprovementGraphVertexType> cur = it.next();
             while (it.hasNext()) {
                 Pair<Integer, ImprovementGraphVertexType> next = it.next();
 
@@ -521,6 +509,25 @@ public class AhujaOrlinSharmaCapacitatedMinimumSpanningTree<V, E>
 
         return Pair.of(affectedLabels, affectedVertices);
     }
+
+	private <V> Integer firstLabel(
+			AbstractCapacitatedMinimumSpanningTree<V, E>.CapacitatedSpanningTreeSolutionRepresentation currentSolution,
+			Map<Integer, V> improvementGraphVertexMapping,
+			Iterator<Pair<Integer, AhujaOrlinSharmaCapacitatedMinimumSpanningTree.ImprovementGraphVertexType>> it) {
+		Pair<Integer, ImprovementGraphVertexType> cur = it.next();
+		Integer firstLabel;
+		switch (cur.getSecond()) {
+		case SINGLE:
+			firstLabel = currentSolution.getLabel(improvementGraphVertexMapping.get(cur.getFirst()));
+			break;
+		case SUBTREE:
+			firstLabel = currentSolution.getLabel(improvementGraphVertexMapping.get(cur.getFirst()));
+			break;
+		default:
+			firstLabel = -1;
+		}
+		return firstLabel;
+	}
 
     /**
      * Updates the map containing the MSTs for every subset of the partition.
