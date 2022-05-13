@@ -121,7 +121,8 @@ public class ColorRefinementAlgorithm<V, E>
         int n = graph.vertexSet().size();
         Set<Integer> adjacentColors = CollectionUtil.newLinkedHashSetWithExpectedSize(n);
 
-        // calculate color degree and update maxColorDegree
+        rep(refiningColor, rep, adjacentColors);
+		// calculate color degree and update maxColorDegree
         for (V v : rep.colorClasses.get(refiningColor)) {
             Set<V> inNeighborhood = graph
                 .incomingEdgesOf(v).stream().map(e -> Graphs.getOppositeVertex(graph, e, v))
@@ -133,32 +134,36 @@ public class ColorRefinementAlgorithm<V, E>
                     rep.positiveDegreeColorClasses.get(rep.coloring.get(w)).add(w);
                 }
                 adjacentColors.add(rep.coloring.get(w));
-
-                // update maxColorDegree for color(w) if maximum color degree has increased.
-                if (rep.colorDegree.get(w) > rep.maxColorDegree[rep.coloring.get(w)]) {
-                    rep.maxColorDegree[rep.coloring.get(w)] = rep.colorDegree.get(w);
-                }
-            }
-        }
-
-        // update minColorDegree
-        for (Integer c : adjacentColors) {
-            // if there is a vertex with colorDegree(v) = 0 < 1, set minimum color degree to
-            // 0
-            if (rep.colorClasses.get(c).size() != rep.positiveDegreeColorClasses.get(c).size()) {
-                rep.minColorDegree[c] = 0;
-            } else {
-                rep.minColorDegree[c] = rep.maxColorDegree[c];
-                for (V v : rep.positiveDegreeColorClasses.get(c)) {
-                    if (rep.colorDegree.get(v) < rep.minColorDegree[c]) {
-                        rep.minColorDegree[c] = rep.colorDegree.get(v);
-                    }
-                }
             }
         }
 
         return adjacentColors;
     }
+
+	private void rep(int refiningColor, ColorRefinementAlgorithm<V, E>.ColoringRepresentation rep,
+			Set<Integer> adjacentColors) {
+		for (V v : rep.colorClasses.get(refiningColor)) {
+			Set<V> inNeighborhood = graph.incomingEdgesOf(v).stream().map(e -> Graphs.getOppositeVertex(graph, e, v))
+					.collect(Collectors.toSet());
+			for (V w : inNeighborhood) {
+				if (rep.colorDegree.get(w) > rep.maxColorDegree[rep.coloring.get(w)]) {
+					rep.maxColorDegree[rep.coloring.get(w)] = rep.colorDegree.get(w);
+				}
+			}
+		}
+		for (Integer c : adjacentColors) {
+			if (rep.colorClasses.get(c).size() != rep.positiveDegreeColorClasses.get(c).size()) {
+				rep.minColorDegree[c] = 0;
+			} else {
+				rep.minColorDegree[c] = rep.maxColorDegree[c];
+				for (V v : rep.positiveDegreeColorClasses.get(c)) {
+					if (rep.colorDegree.get(v) < rep.minColorDegree[c]) {
+						rep.minColorDegree[c] = rep.colorDegree.get(v);
+					}
+				}
+			}
+		}
+	}
 
     /**
      * Helper method that cleanups the internal representation of color degrees for a new iteration.
