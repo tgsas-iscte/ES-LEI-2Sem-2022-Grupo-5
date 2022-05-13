@@ -53,7 +53,8 @@ import static org.jgrapht.util.DoublyLinkedList.ListNode;
 public class TreeDynamicConnectivity<T>
 {
 
-    /**
+    private TreeDynamicConnectivityProduct treeDynamicConnectivityProduct = new TreeDynamicConnectivityProduct();
+	/**
      * Mapping from tree minimums to the trees they're stored in. This map contains one entry per
      * each tree, which has at least two nodes.
      */
@@ -186,8 +187,8 @@ public class TreeDynamicConnectivity<T>
          *
          * [1 - 2] --> [1 - 2] [3 - 4 - 5 - 4] --> [5 - 4 - 3 - 4]
          */
-        makeRoot(firstTree, firstNode);
-        makeRoot(secondTree, secondNode);
+        treeDynamicConnectivityProduct.makeRoot(firstTree, firstNode);
+        treeDynamicConnectivityProduct.makeRoot(secondTree, secondNode);
 
         /*
          * Add one more occurrence for the first element to the second tree:
@@ -348,7 +349,7 @@ public class TreeDynamicConnectivity<T>
             throw new IllegalArgumentException(
                 String.format("Elements {%s} and {%s} are not connected", first, second));
         }
-        makeLastArc(tree, firstNode, arcToSecond);
+        treeDynamicConnectivityProduct.makeLastArc(tree, firstNode, arcToSecond);
 
         /*
          * Now we remove the subtree of the arc (1, 2) from the Euler tour:
@@ -396,50 +397,6 @@ public class TreeDynamicConnectivity<T>
     }
 
     /**
-     * Makes the {@code node} the root of the tree. In practice, this means that the value of the
-     * {@code node} is the first in the Euler tour
-     *
-     * @param tree a tree the {@code node} is stored in
-     * @param node a node to make a root
-     */
-    private void makeRoot(AVLTree<T> tree, Node node)
-    {
-        if (node.arcs.isEmpty()) {
-            return;
-        }
-        makeFirstArc(tree, node.arcs.get(0));
-    }
-
-    /**
-     * Makes the {@code arc} the first arc traversed by the Euler tour
-     *
-     * @param tree corresponding binary tree the Euler tour is stored in
-     * @param arc an arc to use for tree re-rooting
-     */
-    private void makeFirstArc(AVLTree<T> tree, Arc arc)
-    {
-        AVLTree<T> right = tree.splitBefore(arc.arcTreeNode);
-        tree.mergeBefore(right);
-    }
-
-    /**
-     * Makes the {@code arc} the last arc of the {@code node} according to the Euler tour
-     *
-     * @param tree corresponding binary tree the Euler tour is stored in
-     * @param node a new root node
-     * @param arc an arc incident to the {@code node}
-     */
-    private void makeLastArc(AVLTree<T> tree, Node node, Arc arc)
-    {
-        if (node.arcs.size() == 1) {
-            makeRoot(tree, node);
-        } else {
-            Arc nextArc = node.getNextArc(arc);
-            makeFirstArc(tree, nextArc);
-        }
-    }
-
-    /**
      * Returns an internal representation of the {@code element}
      *
      * @param element a user specified node element
@@ -482,7 +439,7 @@ public class TreeDynamicConnectivity<T>
      * Keeps track of the node values and outgoing arcs. The outgoing arcs are placed according to
      * the order they are traversed in the Euler tour
      */
-    private class Node
+    public class Node
     {
         /**
          * Node value
@@ -491,7 +448,7 @@ public class TreeDynamicConnectivity<T>
         /**
          * Arcs list
          */
-        DoublyLinkedList<Arc> arcs;
+        public DoublyLinkedList<Arc> arcs;
         /**
          * Target node to arc mapping
          */
@@ -514,6 +471,9 @@ public class TreeDynamicConnectivity<T>
          *
          * @param arc an arc to remove
          */
+        public Arc getFirst() {
+        	return arcs.get(0);
+        }
         void removeArc(Arc arc)
         {
             arcs.removeNode(arc.listNode);
@@ -598,7 +558,7 @@ public class TreeDynamicConnectivity<T>
      * Two arcs are created for every existing tree edge. This complies with the way an Euler tour
      * is constructed.
      */
-    private class Arc
+    public class Arc
     {
         /**
          * The target of this arc
@@ -613,7 +573,7 @@ public class TreeDynamicConnectivity<T>
          * The occurrence of the source node, which precedes the subtree Euler tour stored in the
          * binary tree
          */
-        TreeNode<T> arcTreeNode;
+        public TreeNode<T> arcTreeNode;
 
         /**
          * Constructs a new arc with the target node {@code target} and the tree node reference
