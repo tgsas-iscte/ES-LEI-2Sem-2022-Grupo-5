@@ -255,7 +255,7 @@ class BlossomVTree
      */
     public void removePlusPlusEdge(BlossomVEdge edge)
     {
-        edge.handle.delete();
+        edge.removePlusPlusEdge();
     }
 
     /**
@@ -506,5 +506,50 @@ class BlossomVTree
 			}
 		}
 		return eps;
+	}
+
+	/**
+	 * Expands an infinity node from the odd branch
+	 * @param infinityNode  a node from the odd branch
+	 */
+	public void expandInfinityNode(BlossomVNode infinityNode) {
+		double eps = this.eps;
+		for (BlossomVNode.IncidentEdgeIterator iterator = infinityNode.incidentEdgesIterator(); iterator.hasNext();) {
+			BlossomVEdge edge = iterator.next();
+			BlossomVNode opposite = edge.head[iterator.getDir()];
+			if (!opposite.isMarked) {
+				edge.slack += eps;
+				if (opposite.isPlusNode()) {
+					if (opposite.tree != this) {
+						opposite.tree.currentEdge.removeFromCurrentMinusPlusHeap(edge);
+					}
+					opposite.tree.addPlusInfinityEdge(edge);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Expands the nodes on an odd branch. Here it is assumed that the blossomSiblings are directed in the way the odd branch goes from  {@code  branchesEndpoint}  to  {@code  blossomRoot} . <p> The method traverses the nodes only once setting the labels, flags, updating the matching, removing former (+, -) edges and creating new (+, inf) edges in the corresponding heaps. The method doesn't process the  {@code  blossomRoot}  and  {@code  branchesEndpoint}  as they belong to the even branch.
+	 * @param blossomRoot  the node that is matched from the outside
+	 * @param branchesEndpoint  the common node of the even and odd branches
+	 */
+	public void expandOddBranch(BlossomVNode blossomRoot, BlossomVNode branchesEndpoint) {
+		BlossomVNode current = branchesEndpoint.blossomSibling.getOpposite(branchesEndpoint);
+		while (current != blossomRoot) {
+			current.label = BlossomVNode.Label.INFINITY;
+			current.isOuter = true;
+			current.tree = null;
+			current.matched = current.blossomSibling;
+			BlossomVEdge prevMatched = current.blossomSibling;
+			expandInfinityNode(current);
+			current = current.blossomSibling.getOpposite(current);
+			current.label = BlossomVNode.Label.INFINITY;
+			current.isOuter = true;
+			current.tree = null;
+			current.matched = prevMatched;
+			expandInfinityNode(current);
+			current = current.blossomSibling.getOpposite(current);
+		}
 	}
 }

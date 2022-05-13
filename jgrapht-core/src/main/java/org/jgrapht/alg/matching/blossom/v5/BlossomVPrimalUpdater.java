@@ -358,7 +358,7 @@ class BlossomVPrimalUpdater<V, E>
         }
 
         // change the matching, the labeling and the dual information on the odd branch
-        expandOddBranch(blossomRoot, branchesEndpoint, tree);
+        tree.expandOddBranch(blossomRoot, branchesEndpoint);
 
         // change the matching, the labeling and dual information on the even branch
         BlossomVEdge augmentEdge = expandEvenBranch(blossomRoot, branchesEndpoint, blossom);
@@ -583,43 +583,6 @@ class BlossomVPrimalUpdater<V, E>
     }
 
     /**
-     * Expands the nodes on an odd branch. Here it is assumed that the blossomSiblings are directed
-     * in the way the odd branch goes from {@code branchesEndpoint} to {@code blossomRoot}.
-     * <p>
-     * The method traverses the nodes only once setting the labels, flags, updating the matching,
-     * removing former (+, -) edges and creating new (+, inf) edges in the corresponding heaps. The
-     * method doesn't process the {@code blossomRoot} and {@code branchesEndpoint} as they belong to
-     * the even branch.
-     *
-     * @param blossomRoot the node that is matched from the outside
-     * @param branchesEndpoint the common node of the even and odd branches
-     * @param tree the tree the blossom was previously in
-     */
-    private void expandOddBranch(
-        BlossomVNode blossomRoot, BlossomVNode branchesEndpoint, BlossomVTree tree)
-    {
-        BlossomVNode current = branchesEndpoint.blossomSibling.getOpposite(branchesEndpoint);
-        // the traversal is done from branchesEndpoint to blossomRoot, i.e. from
-        // lower layers to higher
-        while (current != blossomRoot) {
-            current.label = BlossomVNode.Label.INFINITY;
-            current.isOuter = true;
-            current.tree = null;
-            current.matched = current.blossomSibling;
-            BlossomVEdge prevMatched = current.blossomSibling;
-            expandInfinityNode(current, tree);
-            current = current.blossomSibling.getOpposite(current);
-
-            current.label = BlossomVNode.Label.INFINITY;
-            current.isOuter = true;
-            current.tree = null;
-            current.matched = prevMatched;
-            expandInfinityNode(current, tree);
-            current = current.blossomSibling.getOpposite(current);
-        }
-    }
-
-    /**
      * Changes dual information of the {@code plusNode} and edge incident to it. This method relies
      * on the labeling produced by the first traversal of the
      * {@link BlossomVPrimalUpdater#expandEvenBranch(BlossomVNode, BlossomVNode, BlossomVNode)} and
@@ -715,34 +678,6 @@ class BlossomVPrimalUpdater<V, E>
             if (opposite.isMarked && !opposite.isPlusNode()) {
                 // this is a (-, inf) or (-, -) inner edge
                 edge.slack -= eps;
-            }
-        }
-    }
-
-    /**
-     * Expands an infinity node from the odd branch
-     *
-     * @param infinityNode a node from the odd branch
-     * @param tree the tree the blossom was previously in
-     */
-    private void expandInfinityNode(BlossomVNode infinityNode, BlossomVTree tree)
-    {
-        double eps = tree.eps;
-        for (BlossomVNode.IncidentEdgeIterator iterator = infinityNode.incidentEdgesIterator();
-            iterator.hasNext();)
-        {
-            BlossomVEdge edge = iterator.next();
-            BlossomVNode opposite = edge.head[iterator.getDir()];
-            if (!opposite.isMarked) {
-                edge.slack += eps; // since edge's label changes to inf and this is a boundary edge
-                if (opposite.isPlusNode()) {
-                    // if this node is marked => it's a blossom node => this edge has been processed
-                    // already
-                    if (opposite.tree != tree) {
-                        opposite.tree.currentEdge.removeFromCurrentMinusPlusHeap(edge);
-                    }
-                    opposite.tree.addPlusInfinityEdge(edge);
-                }
             }
         }
     }
