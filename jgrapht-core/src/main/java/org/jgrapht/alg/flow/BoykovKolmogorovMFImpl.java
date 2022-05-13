@@ -470,14 +470,11 @@ public class BoykovKolmogorovMFImpl<V, E>
     private void adopt()
     {
         while (!orphans.isEmpty() || !childOrphans.isEmpty()) {
-            VertexExtension currentVertex;
-
-            // child orphans take precedence
+            BoykovKolmogorovMFImpl<V, E>.VertexExtension currentVertex = currentVertex();
+			// child orphans take precedence
             if (childOrphans.isEmpty()) {
-                currentVertex = orphans.get(orphans.size() - 1);
                 orphans.remove(orphans.size() - 1);
             } else {
-                currentVertex = childOrphans.removeLast();
             }
 
             if (currentVertex.isSourceTreeVertex()) {
@@ -513,11 +510,8 @@ public class BoykovKolmogorovMFImpl<V, E>
                     currentVertex.treeStatus = VertexTreeStatus.FREE_VERTEX;
 
                     for (AnnotatedFlowEdge edge : currentVertex.getOutgoing()) {
-                        VertexExtension targetVertex = edge.getTarget();
-                        if (targetVertex.isSourceTreeVertex()) {
-                            if (edge.getInverse().hasCapacity()) {
-                                makeActive(targetVertex);
-                            }
+                        BoykovKolmogorovMFImpl<V, E>.VertexExtension targetVertex = targetVertex(edge);
+						if (targetVertex.isSourceTreeVertex()) {
                             if (targetVertex.parentEdge == edge) {
                                 // target vertex is a child of the current vertex
                                 targetVertex.makeOrphan();
@@ -598,6 +592,27 @@ public class BoykovKolmogorovMFImpl<V, E>
             }
         }
     }
+
+	private BoykovKolmogorovMFImpl<V, E>.VertexExtension currentVertex() {
+		VertexExtension currentVertex;
+		if (childOrphans.isEmpty()) {
+			currentVertex = orphans.get(orphans.size() - 1);
+		} else {
+			currentVertex = childOrphans.removeLast();
+		}
+		return currentVertex;
+	}
+
+	private BoykovKolmogorovMFImpl<V, E>.VertexExtension targetVertex(
+			MaximumFlowAlgorithmBase<V, E>.AnnotatedFlowEdge edge) {
+		VertexExtension targetVertex = edge.getTarget();
+		if (targetVertex.isSourceTreeVertex()) {
+			if (edge.getInverse().hasCapacity()) {
+				makeActive(targetVertex);
+			}
+		}
+		return targetVertex;
+	}
 
     /**
      * Initializes a new algorithm iteration.
