@@ -63,7 +63,8 @@ import java.util.stream.*;
 public class BergeGraphInspector<V, E>
 {
 
-    private GraphPath<V, E> certificate = null;
+    private BergeGraphInspectorProduct bergeGraphInspectorProduct = new BergeGraphInspectorProduct();
+	private GraphPath<V, E> certificate = null;
     private boolean certify = false;
 
     /**
@@ -481,7 +482,7 @@ public class BergeGraphInspector<V, E>
                             if (v1 == v4 || g.containsEdge(v1, v4) || g.containsEdge(v2, v4))
                                 continue;
                             for (Set<V> fPrime : componentsOfF) {
-                                if (hasANeighbour(g, fPrime, v1) && hasANeighbour(g, fPrime, v4)) {
+                                if (bergeGraphInspectorProduct.hasANeighbour(g, fPrime, v1) && bergeGraphInspectorProduct.hasANeighbour(g, fPrime, v4)) {
                                     if (certify) {
                                         Set<V> validSet = new HashSet<>();
                                         validSet.addAll(fPrime);
@@ -742,7 +743,7 @@ public class BergeGraphInspector<V, E>
      */
     boolean isYXComplete(Graph<V, E> g, V y, Set<V> x)
     {
-        return x.stream().allMatch(t -> g.containsEdge(t, y));
+        return bergeGraphInspectorProduct.isYXComplete(g, y, x);
     }
 
     /**
@@ -867,54 +868,6 @@ public class BergeGraphInspector<V, E>
     }
 
     /**
-     * Reports whether v has at least one neighbour in set
-     * 
-     * @param g A Graph
-     * @param set A set of vertices
-     * @param v A vertex
-     * @return whether v has at least one neighbour in set
-     */
-    private boolean hasANeighbour(Graph<V, E> g, Set<V> set, V v)
-    {
-        return set.stream().anyMatch(s -> g.containsEdge(s, v));
-    }
-
-    /**
-     * For each anticomponent X, find the maximal connected subset F' containing v5 with the
-     * properties that v1,v2 have no neighbours in F' and no vertex of F'\v5 is X-complete
-     * 
-     * @param g A Graph
-     * @param setX A set of vertices
-     * @param v1 A vertex
-     * @param v2 A vertex
-     * @param v5 A Vertex
-     * @return The maximal connected vertex subset containing v5, no neighbours of v1 and v2, and no
-     *         X-complete vertex except v5
-     */
-    private Set<V> findMaximalConnectedSubset(Graph<V, E> g, Set<V> setX, V v1, V v2, V v5)
-    {
-        Set<V> fPrime = new ConnectivityInspector<>(g).connectedSetOf(v5);
-        fPrime
-            .removeIf(
-                t -> t != v5 && isYXComplete(g, t, setX) || v1 == t || v2 == t || g.containsEdge(v1, t)
-                    || g.containsEdge(v2, t));
-        return fPrime;
-    }
-
-    /**
-     * Reports whether a vertex has at least one nonneighbour in X
-     * 
-     * @param g A Graph
-     * @param v A Vertex
-     * @param setX A set of vertices
-     * @return whether v has a nonneighbour in X
-     */
-    private boolean hasANonneighbourInX(Graph<V, E> g, V v, Set<V> setX)
-    {
-        return setX.stream().anyMatch(x -> !g.containsEdge(v, x));
-    }
-
-    /**
      * <p>
      * Checks whether a graph is of configuration type T3. A configuration of type T3 in g is a
      * sequence v1,...,v6,P,X such that
@@ -954,19 +907,19 @@ public class BergeGraphInspector<V, E>
                     }
                     List<Set<V>> anticomponents = findAllAnticomponentsOfY(g, setY);
                     for (Set<V> setX : anticomponents) {
-                        Set<V> fPrime = findMaximalConnectedSubset(g, setX, v1, v2, v5);
+                        Set<V> fPrime = bergeGraphInspectorProduct.findMaximalConnectedSubset(g, setX, v1, v2, v5);
                         Set<V> setF = new HashSet<>();
                         setF.addAll(fPrime);
                         for (V x : setX) {
                             if (!g.containsEdge(x, v1) && !g.containsEdge(x, v2)
-                                && !g.containsEdge(x, v5) && hasANeighbour(g, fPrime, x))
+                                && !g.containsEdge(x, v5) && bergeGraphInspectorProduct.hasANeighbour(g, fPrime, x))
                                 setF.add(x);
                         }
 
                         for (V v4 : g.vertexSet()) {
                             if (v4 == v1 || v4 == v2 || v4 == v5 || g.containsEdge(v2, v4)
                                 || g.containsEdge(v5, v4) || !g.containsEdge(v1, v4)
-                                || !hasANeighbour(g, setF, v4) || !hasANonneighbourInX(g, v4, setX)
+                                || !bergeGraphInspectorProduct.hasANeighbour(g, setF, v4) || !bergeGraphInspectorProduct.hasANonneighbourInX(g, v4, setX)
                                 || isYXComplete(g, v4, setX))
                                 continue;
 
@@ -974,7 +927,7 @@ public class BergeGraphInspector<V, E>
                                 if (v3 == v1 || v3 == v2 || v3 == v4 || v3 == v5
                                     || !g.containsEdge(v2, v3) || !g.containsEdge(v3, v4)
                                     || !g.containsEdge(v5, v3) || g.containsEdge(v1, v3)
-                                    || !hasANonneighbourInX(g, v3, setX) || isYXComplete(g, v3, setX))
+                                    || !bergeGraphInspectorProduct.hasANonneighbourInX(g, v3, setX) || isYXComplete(g, v3, setX))
                                     continue;
                                 for (V v6 : setF) {
                                     if (v6 == v1 || v6 == v2 || v6 == v3 || v6 == v4 || v6 == v5

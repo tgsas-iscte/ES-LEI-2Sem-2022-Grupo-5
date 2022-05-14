@@ -209,23 +209,24 @@ class VF2GraphIsomorphismState<V, E>
             return true;
         } else {
             if (DEBUG) {
-                String cause = "", v1 = g1.getVertex(addVertex1).toString(),
-                    v2 = g2.getVertex(addVertex2).toString();
-
-                if (termInPred2 > termInPred1) {
-                    cause =
-                        "|Tin2 ∩ Pred(Graph2, " + v2 + ")| != |Tin1 ∩ Pred(Graph1, " + v1 + ")|";
-                } else if (termOutPred2 > termOutPred1) {
-                    cause =
-                        "|Tout2 ∩ Pred(Graph2, " + v2 + ")| != |Tout1 ∩ Pred(Graph1, " + v1 + ")|";
-                } else if (newPred2 > newPred1) {
-                    cause = "|N‾ ∩ Pred(Graph2, " + v2 + ")| != |N‾ ∩ Pred(Graph1, " + v1 + ")|";
-                }
-
-                showLog("isFeasbilePair", abortmsg + ": " + cause);
+                String cause = cause(termOutPred1, termOutPred2, termInPred1, termInPred2, newPred1, newPred2);
+				showLog("isFeasbilePair", abortmsg + ": " + cause);
             }
 
             return false;
         }
     }
+
+	private String cause(int termOutPred1, int termOutPred2, int termInPred1, int termInPred2, int newPred1,
+			int newPred2) {
+		String cause = "", v1 = g1.getVertex(addVertex1).toString(), v2 = g2.getVertex(addVertex2).toString();
+		if (termInPred2 > termInPred1) {
+			cause = "|Tin2 ∩ Pred(Graph2, " + v2 + ")| != |Tin1 ∩ Pred(Graph1, " + v1 + ")|";
+		} else if (termOutPred2 > termOutPred1) {
+			cause = "|Tout2 ∩ Pred(Graph2, " + v2 + ")| != |Tout1 ∩ Pred(Graph1, " + v1 + ")|";
+		} else if (newPred2 > newPred1) {
+			cause = "|N‾ ∩ Pred(Graph2, " + v2 + ")| != |N‾ ∩ Pred(Graph1, " + v1 + ")|";
+		}
+		return cause;
+	}
 }
