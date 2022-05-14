@@ -128,17 +128,19 @@ public class KuhnMunkresMinimalWeightBipartitePerfectMatching<V, E>
     /**
      * The actual implementation.
      */
-    static class KuhnMunkresMatrixImplementation<V, E>
+    public static class KuhnMunkresMatrixImplementation<V, E>
     {
-        /**
+        private KuhnMunkresMatrixImplementationProduct kuhnMunkresMatrixImplementationProduct = new KuhnMunkresMatrixImplementationProduct(costMatrix,excessMatrix);
+
+		/**
          * Cost matrix
          */
-        private double[][] costMatrix;
+        public static double[][] costMatrix;
 
         /**
          * Excess matrix
          */
-        private double[][] excessMatrix;
+        public static double[][] excessMatrix;
 
         /**
          * Rows coverage bit-mask
@@ -234,20 +236,11 @@ public class KuhnMunkresMinimalWeightBipartitePerfectMatching<V, E>
          */
         double[][] makeExcessMatrix()
         {
-            double[][] excessMatrix = new double[costMatrix.length][];
-
-            for (int i = 0; i < excessMatrix.length; ++i) {
-                excessMatrix[i] = Arrays.copyOf(costMatrix[i], costMatrix[i].length);
-            }
+            
 
             // Subtract minimal costs across the rows
 
-            for (int i = 0; i < excessMatrix.length; ++i) {
-                double cheapestTaskCost = cheapestTaskCost(excessMatrix, i);
-				for (int j = 0; j < excessMatrix[i].length; ++j) {
-                    excessMatrix[i][j] -= cheapestTaskCost;
-                }
-            }
+            
 
             // Subtract minimal costs across the columns
             //
@@ -260,37 +253,10 @@ public class KuhnMunkresMinimalWeightBipartitePerfectMatching<V, E>
             // of the minimum cost-demands to highlight (with zero) the
             // worker that can tackle this task demanding lowest reward.
 
-            for (int j = 0; j < excessMatrix[0].length; ++j) {
-                double cheapestWorkerCost = cheapestWorkerCost(excessMatrix, j);
-				for (int i = 0; i < excessMatrix.length; ++i) {
-                    excessMatrix[i][j] -= cheapestWorkerCost;
-                }
-            }
-
-            return excessMatrix;
+            return kuhnMunkresMatrixImplementationProduct.makeExcessMatrix();
         }
 
-		private double cheapestWorkerCost(double[][] excessMatrix, int j) {
-			double cheapestWorkerCost = Double.MAX_VALUE;
-			for (int i = 0; i < excessMatrix.length; ++i) {
-				if (cheapestWorkerCost > excessMatrix[i][j]) {
-					cheapestWorkerCost = excessMatrix[i][j];
-				}
-			}
-			return cheapestWorkerCost;
-		}
-
-		private double cheapestTaskCost(double[][] excessMatrix, int i) {
-			double cheapestTaskCost = Double.MAX_VALUE;
-			for (int j = 0; j < excessMatrix[i].length; ++j) {
-				if (cheapestTaskCost > excessMatrix[i][j]) {
-					cheapestTaskCost = excessMatrix[i][j];
-				}
-			}
-			return cheapestTaskCost;
-		}
-
-        /**
+		/**
          * Builds maximal matching corresponding to the given excess-matrix
          *
          * @return size of a maximal matching built

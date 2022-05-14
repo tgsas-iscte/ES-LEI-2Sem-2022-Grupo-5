@@ -115,7 +115,7 @@ public class DenseEdmondsMaximumCardinalityMatching<V, E>
     private Levels levels;
 
     /** Special 'NIL' vertex. */
-    private static final int NIL = -1;
+    public static final int NIL = -1;
 
     /** Queue of 'even' (exposed) vertices */
     private FixedSizeIntegerQueue queue;
@@ -553,29 +553,30 @@ public class DenseEdmondsMaximumCardinalityMatching<V, E>
      * have changed. This is important when the graph is sparse to avoid performing an $O(n)$
      * operation per augmentation.
      */
-    private static class Levels
+    public static class Levels
     {
-        private int[] even, odd;
+        private LevelsProduct levelsProduct = new LevelsProduct();
+		private int[] odd;
         private List<Integer> dirty;
 
         public Levels(int n)
         {
-            this.even = new int[n];
+            levelsProduct.setEven(new int[n]);
             this.odd = new int[n];
             this.dirty = new ArrayList<>();
 
-            Arrays.fill(even, NIL);
+            Arrays.fill(levelsProduct.getEven2(), NIL);
             Arrays.fill(odd, NIL);
         }
 
         public int getEven(int v)
         {
-            return even[v];
+            return levelsProduct.getEven(v);
         }
 
         public void setEven(int v, int value)
         {
-            even[v] = value;
+            levelsProduct.getEven2()[v] = value;
             if (value != NIL) {
                 dirty.add(v);
             }
@@ -596,7 +597,7 @@ public class DenseEdmondsMaximumCardinalityMatching<V, E>
 
         public boolean isEven(int v)
         {
-            return even[v] != NIL;
+            return levelsProduct.isEven(v);
         }
 
         public boolean isOddOrUnreached(int v)
@@ -612,7 +613,7 @@ public class DenseEdmondsMaximumCardinalityMatching<V, E>
         public void reset()
         {
             for (int v : dirty) {
-                even[v] = NIL;
+                levelsProduct.getEven2()[v] = NIL;
                 odd[v] = NIL;
             }
             dirty.clear();
