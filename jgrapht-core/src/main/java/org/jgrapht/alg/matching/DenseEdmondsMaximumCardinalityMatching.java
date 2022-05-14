@@ -622,18 +622,18 @@ public class DenseEdmondsMaximumCardinalityMatching<V, E>
     /**
      * Simple representation of a matching
      */
-    private static class SimpleMatching
+   public static class SimpleMatching
     {
-        private static final int UNMATCHED = -1;
-        private final int[] match;
+        private SimpleMatchingProduct simpleMatchingProduct;
+		public static final int UNMATCHED = -1;
         private Set<Integer> exposed;
 
         private SimpleMatching(int n)
         {
-            this.match = new int[n];
-            this.exposed = CollectionUtil.newHashSetWithExpectedSize(n);
+            this.simpleMatchingProduct = new SimpleMatchingProduct(n);
+			this.exposed = CollectionUtil.newHashSetWithExpectedSize(n);
 
-            Arrays.fill(match, UNMATCHED);
+            Arrays.fill(simpleMatchingProduct.getMatch(), UNMATCHED);
             IntStream.range(0, n).forEach(exposed::add);
         }
 
@@ -642,7 +642,7 @@ public class DenseEdmondsMaximumCardinalityMatching<V, E>
          */
         boolean isMatched(int v)
         {
-            return match[v] != UNMATCHED;
+            return simpleMatchingProduct.isMatched(v);
         }
 
         /**
@@ -650,7 +650,7 @@ public class DenseEdmondsMaximumCardinalityMatching<V, E>
          */
         boolean isExposed(int v)
         {
-            return match[v] == UNMATCHED;
+            return simpleMatchingProduct.isExposed(v);
         }
 
         /**
@@ -658,8 +658,7 @@ public class DenseEdmondsMaximumCardinalityMatching<V, E>
          */
         int opposite(int v)
         {
-            assert isMatched(v);
-            return match[v];
+            return simpleMatchingProduct.opposite(v);
         }
 
         /**
@@ -667,8 +666,8 @@ public class DenseEdmondsMaximumCardinalityMatching<V, E>
          */
         void match(int u, int v)
         {
-            match[u] = v;
-            match[v] = u;
+            simpleMatchingProduct.getMatch()[u] = v;
+            simpleMatchingProduct.getMatch()[v] = u;
             exposed.remove(u);
             exposed.remove(v);
         }
