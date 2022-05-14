@@ -57,7 +57,8 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
     implements
     PlanarityTestingAlgorithm<V, E>
 {
-    /**
+    private BoyerMyrvoldPlanarityInspectorProduct boyerMyrvoldPlanarityInspectorProduct = new BoyerMyrvoldPlanarityInspectorProduct();
+	/**
      * Whether to print debug messages
      */
     private static final boolean DEBUG = false;
@@ -106,7 +107,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
      * on the path to the back edge source. After all the biconnected components are merged, this
      * stack is cleared
      */
-    private List<MergeInfo> stack;
+    public List<MergeInfo> stack;
     /**
      * The node $v$, which has an unembedded back edge incident to it.
      */
@@ -710,7 +711,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
      * @param dir the direction of the search
      * @return a circulator to the found node
      */
-    private OuterFaceCirculator getExternallyActiveSuccessorOnOuterFace(
+    public  OuterFaceCirculator getExternallyActiveSuccessorOnOuterFace(
         Node start, Node stop, Node v, int dir)
     {
         return selectOnOuterFace(n -> n.isExternallyActiveWrtTo(v), start, stop, dir);
@@ -768,78 +769,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
      */
     private Edge searchEdge(Node current, int heightMax)
     {
-        return searchEdge(current, heightMax, null);
-    }
-
-    /**
-     * Searches a back edge which target has a height smaller than {@code heightMax}
-     *
-     * @param current the node to start from
-     * @param heightMax an upper bound on the height of the desired back edge
-     * @param forbiddenEdge an edge the desired edge should not be equal to
-     * @return the desired back edge or null, if no such edge exist
-     */
-    private Edge searchEdge(Node current, int heightMax, Edge forbiddenEdge)
-    {
-        Predicate<Edge> isNeeded = e -> {
-            if (forbiddenEdge == e) {
-                return false;
-            }
-            return e.target.height < heightMax;
-        };
-        return searchEdge(current, isNeeded);
-    }
-
-    /**
-     * Generically searches an edge in the subtree rooted at the {@code current}, which doesn't
-     * include the children of the {@code current} that have beem merged to the parent biconnected
-     * component.
-     *
-     * @param current the node to start the searh from
-     * @param isNeeded the predicate which the desired edge should satisfy
-     * @return an edge which satisfies the {@code predicate}, or null if such an edge doesn't exist
-     */
-    private Edge searchEdge(Node current, Predicate<Edge> isNeeded)
-    {
-        for (Node node : current.separatedDfsChildList) {
-            Edge result = searchSubtreeDfs(node, isNeeded);
-            if (result != null) {
-                return result;
-            }
-        }
-        for (Edge edge : current.backEdges) {
-            if (isNeeded.test(edge)) {
-                return edge;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Recursively searches all the subtree root at the node {@code start} to find an edge
-     * satisfying the {@code predicate}.
-     *
-     * @param start the node to start the search from.
-     * @param isNeeded a predicate, which the desired edge should satisfy
-     * @return a desired edge, or null if no such edge exist.
-     */
-    private Edge searchSubtreeDfs(Node start, Predicate<Edge> isNeeded)
-    {
-        List<Node> stack = new ArrayList<>();
-        stack.add(start);
-        while (!stack.isEmpty()) {
-            Node current = stack.remove(stack.size() - 1);
-
-            for (Edge edge : current.backEdges) {
-                if (isNeeded.test(edge)) {
-                    return edge;
-                }
-            }
-            for (Edge edge : current.treeEdges) {
-                stack.add(edge.target);
-            }
-        }
-        return null;
+        return boyerMyrvoldPlanarityInspectorProduct.searchEdge(current, heightMax, null);
     }
 
     /**
@@ -1191,71 +1121,6 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
     }
 
     /**
-     * Checks whether the biconnected component rooted at {@code componentRoot} can be used to
-     * extract a Kuratowski subdivision. It can be used in the case there is one externally active
-     * node on each branch of the outer face and there is a pertinent node on the lower part of the
-     * outer face between these two externally active nodes.
-     *
-     * @param componentRoot the root of the biconnected component
-     * @param v an ancestor of the nodes in the biconnected component
-     * @return an unembedded back edge, which target is {@code v} and which can be used to extract a
-     *         Kuratowski subdivision, or {@code null} is no such edge exist for this biconnected
-     *         component
-     */
-    private Edge checkComponentForFailedEdge(Node componentRoot, Node v)
-    {
-        OuterFaceCirculator firstDir =
-            getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 0);
-        Node firstDirNode = firstDir.getCurrent();
-        OuterFaceCirculator secondDir =
-            getExternallyActiveSuccessorOnOuterFace(componentRoot, componentRoot, v, 1);
-        Node secondDirNode = secondDir.getCurrent();
-        if (firstDirNode != componentRoot && firstDirNode != secondDirNode) {
-            Node current = firstDir.next();
-            while (current != secondDirNode) {
-                if (current.isPertinentWrtTo(v)) {
-                    return searchEdge(current, e -> e.target == v && !e.embedded);
-                }
-                current = firstDir.next();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Finds an unembedded back edge to {@code v}, which can be used to extract the Kuratowski
-     * subdivision. If the merge stack isn't empty, the last biconnected component processed by the
-     * walkdown can be used to find such an edge, because walkdown descended to that component
-     * (which means that component is pertinent) and couldn't reach a pertinent node. This can only
-     * happen by encountering externally active nodes on both branches of the traversal. Otherwise,
-     * be have look in all the child biconnected components to find an unembedded back edge. We're
-     * guided by the fact that an edge can not be embedded only in the case both traversals of the
-     * walkdown could reach all off the pertinent nodes. This in turn can happen only if both
-     * traversals get stuck on externally active nodes.
-     * <p>
-     * <b>Note:</b> not every unembedded back edge can be used to extract a Kuratowski subdivision
-     *
-     * @param v the vertex which has an unembedded back edge incident to it
-     * @return the found unembedded back edge which can be used to extract a Kuratowski subdivision
-     */
-    private Edge findFailedEdge(Node v)
-    {
-        if (stack.isEmpty()) {
-            for (Node child : v.separatedDfsChildList) {
-                Node componentRoot = child.initialComponentRoot;
-                Edge result = checkComponentForFailedEdge(componentRoot, v);
-                if (result != null) {
-                    return result;
-                }
-            }
-            return null; // should not happen in case node v has an incident unembedded back edge
-        } else {
-            MergeInfo info = stack.get(stack.size() - 1);
-            return checkComponentForFailedEdge(info.child, v);
-        }
-    }
-
-    /**
      * Lazily extracts a Kuratowski subdivision from the {@code graph}. The process of adding the
      * edges of the subdivision to the resulting set of edges had been made explicit for every case.
      *
@@ -1271,7 +1136,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
             }
             Set<Edge> subdivision = new HashSet<>();
             // find the needed unembedded back edge which can be used to find Kuratowski subgraph
-            Edge failedEdge = findFailedEdge(failedV);
+            Edge failedEdge = boyerMyrvoldPlanarityInspectorProduct.findFailedEdge(failedV, this);
             assert failedEdge != null;
             /*
              * We're iteratively moving up traversing the outer faces of the biconnected components
@@ -1326,7 +1191,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
             Node z = getNextOnPath(w, failedEdge);
             Edge backEdge = null;
             if (z != null) {
-                backEdge = searchSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
+                backEdge = boyerMyrvoldPlanarityInspectorProduct.searchSubtreeDfs(z, e -> e.target.height < v.height && e != failedEdge);
             }
             if (backEdge != null) {
                 // case B
@@ -1395,7 +1260,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
                 addPathEdges(subdivision, failedEdge, w);
                 return finish(subdivision);
             }
-            Edge externallyActive = searchEdge(w, v.height, failedEdge);
+            Edge externallyActive = boyerMyrvoldPlanarityInspectorProduct.searchEdge(w, v.height, failedEdge);
             assert externallyActive != null;
             if (DEBUG) {
                 System.out.printf("Externally active edge = %s\n", externallyActive.toString());
@@ -1589,7 +1454,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
     /**
      * The information needed to merge two consecutive biconnected components
      */
-    private class MergeInfo
+    public class MergeInfo
     {
         /**
          * The node current traversal descended from. This node belongs to the parent biconnected
@@ -1674,7 +1539,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
      * A circulator over the nodes on the boundary of the biconnected component. Traverses the nodes
      * in the cyclic manner, i.e. it doesn't stop when all the nodes are traversed
      */
-    private class OuterFaceCirculator
+    public class OuterFaceCirculator
         implements
         Iterator<Node>
     {
@@ -1790,7 +1655,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
     /**
      * Internal representation of the edges of the input {@code graph}.
      */
-    private class Edge
+    public class Edge
     {
         /**
          * The counterpart of this edge in the {@code graph}. This value can be null if the edge was
@@ -1907,7 +1772,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
      * The internal representation of the vertices of the graph. Contains necessary information to
      * perform dfs traversals, biconnected component boundary traversals, to embed edges, etc.
      */
-    private class Node
+    public class Node
     {
         /**
          * The counterpart of this node in the {@code graph}. For the component roots this value is
@@ -1989,7 +1854,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
          * The list containing the dfs children of this node, which are in the different child
          * biconnected component, i.e. their weren't merged in the parent component.
          */
-        DoublyLinkedList<Node> separatedDfsChildList;
+        public DoublyLinkedList<Node> separatedDfsChildList;
         /**
          * The roots of the pertinent components during the processing of the node $v$. These are
          * the components that have pertinent descendant nodes, i.e. nodes incident to the node $v$
@@ -2000,7 +1865,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
          * The list of tree edges incident to this node in the dfs tree. This list doesn't contain a
          * parent edge of this node
          */
-        List<Edge> treeEdges;
+        public List<Edge> treeEdges;
         /**
          * The list containing the edges from descendants of this node in the dfs tree. For each
          * such descendant the corresponding edge is a back edge.
@@ -2009,7 +1874,7 @@ public class BoyerMyrvoldPlanarityInspector<V, E>
         /**
          * The list of back edges incident to this node.
          */
-        List<Edge> backEdges;
+        public List<Edge> backEdges;
         /**
          * Stores the list node from the {@code separatedDfsChildList} of the parent node this node
          * is stored in. This enable deleting of this node from the {@code separatedDfsChildList}
