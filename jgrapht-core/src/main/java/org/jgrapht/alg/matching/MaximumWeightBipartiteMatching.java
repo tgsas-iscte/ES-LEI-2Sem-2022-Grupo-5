@@ -226,7 +226,8 @@ public class MaximumWeightBipartiteMatching<V, E>
         }
 
         while (true) {
-            /*
+            a1 = a1(minA, a1);
+			/*
              * select from priority queue the node b with minimal distance db
              */
             V b = null;
@@ -251,7 +252,6 @@ public class MaximumWeightBipartiteMatching<V, E>
                     augmentPathTo(b);
                     break;
                 } else {
-                    a1 = Graphs.getOppositeVertex(graph, e, b);
                     pred.put(a1, e);
                     reachedA.push(a1);
                     dist.put(a1, db);
@@ -312,6 +312,24 @@ public class MaximumWeightBipartiteMatching<V, E>
             pot.put(v, pot.get(v).add(potChange));
         }
     }
+
+	private V a1(BigDecimal minA, V a1) {
+		V b = null;
+		BigDecimal db = BigDecimal.ZERO;
+		if (!heap.isEmpty()) {
+			b = heap.deleteMin().getValue();
+			db = dist.get(b);
+		}
+		if (b == null || comparator.compare(db, minA) >= 0) {
+		} else {
+			E e = matchedEdge.get(b);
+			if (e == null) {
+			} else {
+				a1 = Graphs.getOppositeVertex(graph, e, b);
+			}
+		}
+		return a1;
+	}
 
     private void augmentPathTo(V v)
     {

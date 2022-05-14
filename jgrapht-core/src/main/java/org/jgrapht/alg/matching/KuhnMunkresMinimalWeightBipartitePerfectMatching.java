@@ -243,15 +243,8 @@ public class KuhnMunkresMinimalWeightBipartitePerfectMatching<V, E>
             // Subtract minimal costs across the rows
 
             for (int i = 0; i < excessMatrix.length; ++i) {
-                double cheapestTaskCost = Double.MAX_VALUE;
-
-                for (int j = 0; j < excessMatrix[i].length; ++j) {
-                    if (cheapestTaskCost > excessMatrix[i][j]) {
-                        cheapestTaskCost = excessMatrix[i][j];
-                    }
-                }
-
-                for (int j = 0; j < excessMatrix[i].length; ++j) {
+                double cheapestTaskCost = cheapestTaskCost(excessMatrix, i);
+				for (int j = 0; j < excessMatrix[i].length; ++j) {
                     excessMatrix[i][j] -= cheapestTaskCost;
                 }
             }
@@ -268,21 +261,34 @@ public class KuhnMunkresMinimalWeightBipartitePerfectMatching<V, E>
             // worker that can tackle this task demanding lowest reward.
 
             for (int j = 0; j < excessMatrix[0].length; ++j) {
-                double cheapestWorkerCost = Double.MAX_VALUE;
-
-                for (int i = 0; i < excessMatrix.length; ++i) {
-                    if (cheapestWorkerCost > excessMatrix[i][j]) {
-                        cheapestWorkerCost = excessMatrix[i][j];
-                    }
-                }
-
-                for (int i = 0; i < excessMatrix.length; ++i) {
+                double cheapestWorkerCost = cheapestWorkerCost(excessMatrix, j);
+				for (int i = 0; i < excessMatrix.length; ++i) {
                     excessMatrix[i][j] -= cheapestWorkerCost;
                 }
             }
 
             return excessMatrix;
         }
+
+		private double cheapestWorkerCost(double[][] excessMatrix, int j) {
+			double cheapestWorkerCost = Double.MAX_VALUE;
+			for (int i = 0; i < excessMatrix.length; ++i) {
+				if (cheapestWorkerCost > excessMatrix[i][j]) {
+					cheapestWorkerCost = excessMatrix[i][j];
+				}
+			}
+			return cheapestWorkerCost;
+		}
+
+		private double cheapestTaskCost(double[][] excessMatrix, int i) {
+			double cheapestTaskCost = Double.MAX_VALUE;
+			for (int j = 0; j < excessMatrix[i].length; ++j) {
+				if (cheapestTaskCost > excessMatrix[i][j]) {
+					cheapestTaskCost = excessMatrix[i][j];
+				}
+			}
+			return cheapestTaskCost;
+		}
 
         /**
          * Builds maximal matching corresponding to the given excess-matrix
@@ -370,48 +376,9 @@ public class KuhnMunkresMinimalWeightBipartitePerfectMatching<V, E>
 
             boolean[] invertible = new boolean[rowsCovered.length];
 
-            for (int i = 0; i < excessMatrix.length; ++i) {
-                if (columnMatched[i] != -1) {
-                    invertible[i] = true;
-                    continue;
-                }
-
-                for (int j = 0; j < excessMatrix[i].length; ++j) {
-                    if (Double.compare(excessMatrix[i][j], 0.) == 0) {
-                        rowsCovered[i] = invertible[i] = true;
-                        break;
-                    }
-                }
-            }
-
-            boolean cont = true;
-
-            while (cont) {
-                for (int i = 0; i < excessMatrix.length; ++i) {
-                    if (rowsCovered[i]) {
-                        for (int j = 0; j < excessMatrix[i].length; ++j) {
-                            if ((Double.compare(excessMatrix[i][j], 0.) == 0)
-                                && !columnsCovered[j])
-                            {
-                                columnsCovered[j] = true;
-                            }
-                        }
-                    }
-                }
-
-                // Shall we continue?
-
-                cont = false;
-
-                for (int j = 0; j < columnsCovered.length; ++j) {
-                    if (columnsCovered[j] && (rowMatched[j] != -1)) {
-                        if (!rowsCovered[rowMatched[j]]) {
-                            cont = true;
-                            rowsCovered[rowMatched[j]] = true;
-                        }
-                    }
-                }
-            }
+            invertible = invertible(invertible);
+			boolean cont = cont();
+			
 
             // Invert covered rows selection
 
@@ -424,6 +391,47 @@ public class KuhnMunkresMinimalWeightBipartitePerfectMatching<V, E>
             assert uncovered(excessMatrix, rowsCovered, columnsCovered) == 0;
             assert minimal(rowMatched, rowsCovered, columnsCovered);
         }
+
+		private boolean[] invertible(boolean[] invertible) {
+			for (int i = 0; i < excessMatrix.length; ++i) {
+				if (columnMatched[i] != -1) {
+					invertible[i] = true;
+					continue;
+				}
+				for (int j = 0; j < excessMatrix[i].length; ++j) {
+					if (Double.compare(excessMatrix[i][j], 0.) == 0) {
+						rowsCovered[i] = invertible[i] = true;
+						break;
+					}
+				}
+			}
+			return invertible;
+		}
+
+		private boolean cont() {
+			boolean cont = true;
+			while (cont) {
+				for (int i = 0; i < excessMatrix.length; ++i) {
+					if (rowsCovered[i]) {
+						for (int j = 0; j < excessMatrix[i].length; ++j) {
+							if ((Double.compare(excessMatrix[i][j], 0.) == 0) && !columnsCovered[j]) {
+								columnsCovered[j] = true;
+							}
+						}
+					}
+				}
+				cont = false;
+				for (int j = 0; j < columnsCovered.length; ++j) {
+					if (columnsCovered[j] && (rowMatched[j] != -1)) {
+						if (!rowsCovered[rowMatched[j]]) {
+							cont = true;
+							rowsCovered[rowMatched[j]] = true;
+						}
+					}
+				}
+			}
+			return cont;
+		}
 
         /**
          * Extends equality-graph subtracting minimal excess from all the COLUMNS UNCOVERED and

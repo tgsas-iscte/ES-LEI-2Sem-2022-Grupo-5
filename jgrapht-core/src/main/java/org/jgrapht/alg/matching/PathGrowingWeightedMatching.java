@@ -166,7 +166,8 @@ public class PathGrowingWeightedMatching<V, E>
         Set<E> m2 = new HashSet<>();
         double m1Weight = 0d, m2Weight = 0d;
         int i = 1;
-        while (!visibleVertex.isEmpty()) {
+        m1Weight = m1Weight(visibleVertex, m1Weight, i);
+		while (!visibleVertex.isEmpty()) {
             // find vertex arbitrarily
             V x = visibleVertex.stream().findAny().get();
 
@@ -195,7 +196,6 @@ public class PathGrowingWeightedMatching<V, E>
                     switch (i) {
                     case 1:
                         m1.add(maxWeightedEdge);
-                        m1Weight += maxWeight;
                         break;
                     case 2:
                         m2.add(maxWeightedEdge);
@@ -224,6 +224,42 @@ public class PathGrowingWeightedMatching<V, E>
         }
     }
 
+	private double m1Weight(Set<V> visibleVertex, double m1Weight, int i) throws RuntimeException {
+		while (!visibleVertex.isEmpty()) {
+			V x = visibleVertex.stream().findAny().get();
+			while (x != null) {
+				double maxWeight = 0d;
+				E maxWeightedEdge = null;
+				V maxWeightedNeighbor = null;
+				for (E e : graph.edgesOf(x)) {
+					V other = Graphs.getOppositeVertex(graph, e, x);
+					if (visibleVertex.contains(other) && !other.equals(x)) {
+						double curWeight = graph.getEdgeWeight(e);
+						if (comparator.compare(curWeight, 0d) > 0
+								&& (maxWeightedEdge == null || comparator.compare(curWeight, maxWeight) > 0)) {
+							maxWeight = curWeight;
+							maxWeightedEdge = e;
+							maxWeightedNeighbor = other;
+						}
+					}
+				}
+				if (maxWeightedEdge != null) {
+					switch (i) {
+					case 1:
+						m1Weight += maxWeight;
+						break;
+						//break;
+					default:
+						throw new RuntimeException("Failed to figure out matching, seems to be a bug");
+					}
+					i = 3 - i;
+				}
+				x = maxWeightedNeighbor;
+			}
+		}
+		return m1Weight;
+	}
+
     // the algorithm (improved with additional heuristics)
     private Matching<V, E> runWithHeuristics()
     {
@@ -239,11 +275,10 @@ public class PathGrowingWeightedMatching<V, E>
 
         // run algorithm
         while (!visibleVertex.isEmpty()) {
-            // find vertex arbitrarily
+            LinkedList<E> path = path(visibleVertex);
+			// find vertex arbitrarily
             V x = visibleVertex.stream().findAny().get();
 
-            // grow path from x
-            LinkedList<E> path = new LinkedList<>();
             while (x != null) {
                 // first heaviest edge incident to vertex x (among visible neighbors)
                 double maxWeight = 0d;
@@ -263,10 +298,6 @@ public class PathGrowingWeightedMatching<V, E>
                     }
                 }
 
-                // add edge to path and remove x
-                if (maxWeightedEdge != null) {
-                    path.add(maxWeightedEdge);
-                }
                 visibleVertex.remove(x);
 
                 // go to next vertex
@@ -318,6 +349,47 @@ public class PathGrowingWeightedMatching<V, E>
         // return extended matching
         return new MatchingImpl<>(graph, matching, matchingWeight);
     }
+
+	private LinkedList<E> path(Set<V> visibleVertex) {
+		V x = visibleVertex.stream().findAny().get();
+		LinkedList<E> path = new LinkedList<>();
+		while (x != null) {
+			double maxWeight = 0d;
+			E maxWeightedEdge = null;
+			V maxWeightedNeighbor = null;
+			for (E e : graph.edgesOf(x)) {
+				maxWeightedNeighbor = maxWeightedNeighbor(visibleVertex, x, maxWeight, maxWeightedEdge,
+						maxWeightedNeighbor, e);
+				V other = Graphs.getOppositeVertex(graph, e, x);
+				if (visibleVertex.contains(other) && !other.equals(x)) {
+					double curWeight = graph.getEdgeWeight(e);
+					if (comparator.compare(curWeight, 0d) > 0
+							&& (maxWeightedEdge == null || comparator.compare(curWeight, maxWeight) > 0)) {
+						maxWeight = curWeight;
+						maxWeightedEdge = e;
+					}
+				}
+			}
+			if (maxWeightedEdge != null) {
+				path.add(maxWeightedEdge);
+			}
+			x = maxWeightedNeighbor;
+		}
+		return path;
+	}
+
+	private <V, E> V maxWeightedNeighbor(Set<V> visibleVertex, V x, double maxWeight, E maxWeightedEdge,
+			V maxWeightedNeighbor, E e) {
+//		//V other = Graphs.getOppositeVertex(graph, e, x);
+//		if (visibleVertex.contains(other) && !other.equals(x)) {
+//			//double curWeight = graph.getEdgeWeight(e);
+//			if (comparator.compare(curWeight, 0d) > 0
+//					&& (maxWeightedEdge == null || comparator.compare(curWeight, maxWeight) > 0)) {
+//				maxWeightedNeighbor = other;
+//			}
+//		}
+		return maxWeightedNeighbor;
+	}
 
     /**
      * Helper class for repeatedly solving the maximum weight matching on paths.
@@ -372,9 +444,8 @@ public class PathGrowingWeightedMatching<V, E>
             a[0] = 0d;
             a[1] = (comparator.compare(eWeight, 0d) > 0) ? eWeight : 0d;
             for (int i = 2; i <= pathLength; i++) {
-                e = it.next();
-                eWeight = g.getEdgeWeight(e);
-                if (comparator.compare(a[i - 1], a[i - 2] + eWeight) > 0) {
+                eWeight = eWeight(g, it, e, eWeight);
+				if (comparator.compare(a[i - 1], a[i - 2] + eWeight) > 0) {
                     a[i] = a[i - 1];
                 } else {
                     a[i] = a[i - 2] + eWeight;
@@ -401,6 +472,12 @@ public class PathGrowingWeightedMatching<V, E>
             // return solution
             return Pair.of(a[pathLength], matching);
         }
+
+		private <V, E> double eWeight(Graph<V, E> g, Iterator<E> it, E e, double eWeight) {
+			e = it.next();
+			eWeight = g.getEdgeWeight(e);
+			return eWeight;
+		}
 
     }
 

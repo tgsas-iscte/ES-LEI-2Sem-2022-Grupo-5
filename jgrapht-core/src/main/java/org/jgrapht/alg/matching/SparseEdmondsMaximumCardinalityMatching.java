@@ -372,51 +372,61 @@ public class SparseEdmondsMaximumCardinalityMatching<V, E>
             int numberOfUnlabeled = 0;
             int arbUNode = -1;
 
-            for (int v = 0; v < nodes; v++) {
-                if (label[v] == Label.UNLABELED) {
-                    numberOfUnlabeled++;
-                    arbUNode = v;
-                }
-            }
-
-            if (numberOfUnlabeled > 0) {
-                osc[arbUNode] = 1;
-                int lambda = (numberOfUnlabeled == 2 ? 0 : 2);
-                for (int v = 0; v < nodes; v++) {
-                    if (label[v] == Label.UNLABELED && v != arbUNode) {
-                        osc[v] = lambda;
-                    }
-                }
-            }
-
-            int kappa = (numberOfUnlabeled <= 2 ? 2 : 3);
-            for (int v = 0; v < nodes; v++) {
-                if (base.find(v) != v && osc[base.find(v)] == -1) {
-                    osc[base.find(v)] = kappa++;
-                }
-            }
-
-            for (int v = 0; v < nodes; v++) {
-                if (base.find(v) == v && osc[v] == -1) {
-                    if (label[v] == Label.EVEN) {
-                        osc[v] = 0;
-                    }
-                    if (label[v] == Label.ODD) {
-                        osc[v] = 1;
-                    }
-                }
-                if (base.find(v) != v) {
-                    osc[v] = osc[base.find(v)];
-                }
-            }
-
-            Map<V, Integer> oddSetCover = new HashMap<>();
+            osc = osc(osc, numberOfUnlabeled, arbUNode);
+			Map<V, Integer> oddSetCover = new HashMap<>();
             for (int v = 0; v < nodes; v++) {
                 oddSetCover.put(vertexMap[v], osc[v]);
             }
 
             return oddSetCover;
         }
+
+		private int[] osc(int[] osc, int numberOfUnlabeled, int arbUNode) {
+			arbUNode = arbUNode(arbUNode);
+			for (int v = 0; v < nodes; v++) {
+				if (label[v] == Label.UNLABELED) {
+					numberOfUnlabeled++;
+				}
+			}
+			if (numberOfUnlabeled > 0) {
+				osc[arbUNode] = 1;
+				int lambda = (numberOfUnlabeled == 2 ? 0 : 2);
+				for (int v = 0; v < nodes; v++) {
+					if (label[v] == Label.UNLABELED && v != arbUNode) {
+						osc[v] = lambda;
+					}
+				}
+			}
+			int kappa = (numberOfUnlabeled <= 2 ? 2 : 3);
+			for (int v = 0; v < nodes; v++) {
+				if (base.find(v) != v && osc[base.find(v)] == -1) {
+					osc[base.find(v)] = kappa++;
+				}
+			}
+			for (int v = 0; v < nodes; v++) {
+				if (base.find(v) == v && osc[v] == -1) {
+					if (label[v] == Label.EVEN) {
+						osc[v] = 0;
+					}
+					if (label[v] == Label.ODD) {
+						osc[v] = 1;
+					}
+				}
+				if (base.find(v) != v) {
+					osc[v] = osc[base.find(v)];
+				}
+			}
+			return osc;
+		}
+
+		private int arbUNode(int arbUNode) {
+			for (int v = 0; v < nodes; v++) {
+				if (label[v] == Label.UNLABELED) {
+					arbUNode = v;
+				}
+			}
+			return arbUNode;
+		}
 
     }
 
