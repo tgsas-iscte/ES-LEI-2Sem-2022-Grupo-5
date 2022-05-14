@@ -199,23 +199,13 @@ public class GraphMeasurer<V, E>
         if (graph.getType().isUndirected()) {
             List<V> vertices = new ArrayList<>(graph.vertexSet());
             double[] eccentricityVector = new double[vertices.size()];
-            for (int i = 0; i < vertices.size() - 1; i++) {
-                for (int j = i + 1; j < vertices.size(); j++) {
-                    double dist =
-                        shortestPathAlgorithm.getPathWeight(vertices.get(i), vertices.get(j));
-                    eccentricityVector[i] = Math.max(eccentricityVector[i], dist);
-                    eccentricityVector[j] = Math.max(eccentricityVector[j], dist);
-                }
-            }
-            for (int i = 0; i < vertices.size(); i++)
+            eccentricityVector = eccentricityVector(vertices, eccentricityVector);
+			for (int i = 0; i < vertices.size(); i++)
                 eccentricityMap.put(vertices.get(i), eccentricityVector[i]);
         } else {
             for (V u : graph.vertexSet()) {
-                double eccentricity = 0;
-                for (V v : graph.vertexSet())
-                    eccentricity =
-                        Double.max(eccentricity, shortestPathAlgorithm.getPathWeight(u, v));
-                eccentricityMap.put(u, eccentricity);
+                double eccentricity = eccentricity(u);
+				eccentricityMap.put(u, eccentricity);
             }
         }
 
@@ -230,4 +220,23 @@ public class GraphMeasurer<V, E>
             }
         }
     }
+
+	private <V> double eccentricity(V u) {
+		double eccentricity = 0;
+		for (V v : graph.vertexSet()) {
+			eccentricity = Double.max(eccentricity, shortestPathAlgorithm.getPathWeight(u, v));
+		}
+		return eccentricity;
+	}
+
+	private double[] eccentricityVector(List<V> vertices, double[] eccentricityVector) {
+		for (int i = 0; i < vertices.size() - 1; i++) {
+			for (int j = i + 1; j < vertices.size(); j++) {
+				double dist = shortestPathAlgorithm.getPathWeight(vertices.get(i), vertices.get(j));
+				eccentricityVector[i] = Math.max(eccentricityVector[i], dist);
+				eccentricityVector[j] = Math.max(eccentricityVector[j], dist);
+			}
+		}
+		return eccentricityVector;
+	}
 }

@@ -43,12 +43,12 @@ public interface ShortestPathAlgorithm<V, E>
      * Get the weight of the shortest path from a source vertex to a sink vertex. Returns
      * {@link Double#POSITIVE_INFINITY} if no path exists.
      *
-     * @param source the source vertex
-     * @param sink the sink vertex
+     * @param u the source vertex
+     * @param v the sink vertex
      * @return the weight of the shortest path from a source vertex to a sink vertex, or
      *         {@link Double#POSITIVE_INFINITY} if no path exists
      */
-    double getPathWeight(V source, V sink);
+    double getPathWeight(V u, V v);
 
     /**
      * Compute all shortest paths starting from a single source vertex.
