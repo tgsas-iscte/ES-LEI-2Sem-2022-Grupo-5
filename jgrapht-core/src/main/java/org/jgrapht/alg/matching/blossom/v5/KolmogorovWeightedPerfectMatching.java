@@ -160,7 +160,7 @@ public class KolmogorovWeightedPerfectMatching<V, E>
     /**
      * When set to true, verbose debugging output will be produced
      */
-    static final boolean DEBUG = false;
+    public static final boolean DEBUG = false;
     /**
      * Exception message if no perfect matching is possible
      */
