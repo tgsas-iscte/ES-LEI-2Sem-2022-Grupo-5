@@ -161,14 +161,9 @@ public class SzwarcfiterLauerSimpleCycles<V, E>
                 foundCycle = true;
                 List<V> cycle = new ArrayList<>();
                 Iterator<V> it = stack.descendingIterator();
-                V current;
-                while (it.hasNext()) {
-                    current = it.next();
-                    if (wV.equals(current)) {
-                        break;
-                    }
-                }
-                cycle.add(wV);
+                V current = null;
+                current = current(vV, wV, it, current);
+				cycle.add(wV);
                 while (it.hasNext()) {
                     current = it.next();
                     cycle.add(current);
@@ -189,6 +184,22 @@ public class SzwarcfiterLauerSimpleCycles<V, E>
         position[v] = graph.vertexSet().size();
         return foundCycle;
     }
+
+	private V current(V vV, V wV, Iterator<V> it, V current) {
+		while (it.hasNext()) {
+			current = it.next();
+			if (wV.equals(current)) {
+				break;
+			}
+		}
+		while (it.hasNext()) {
+			current = it.next();
+			if (current.equals(vV)) {
+				break;
+			}
+		}
+		return current;
+	}
 
     private void noCycle(int x, int y)
     {

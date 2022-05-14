@@ -327,8 +327,8 @@ public class CapacityScalingMinimumCostFlow<V, E>
         // convert edges into their internal counterparts
         for (E edge : graph.edgeSet()) {
             graphEdges.add(edge);
-            Node node = nodeMap.get(graph.getEdgeSource(edge));
-            Node opposite = nodeMap.get(graph.getEdgeTarget(edge));
+            CapacityScalingMinimumCostFlow.Node opposite = opposite(nodeMap, graph, i, edge);
+			Node node = nodeMap.get(graph.getEdgeSource(edge));
             int upperCap = problem.getArcCapacityUpperBounds().apply(edge);
             int lowerCap = problem.getArcCapacityLowerBounds().apply(edge);
             double cost = graph.getEdgeWeight(edge);
@@ -350,19 +350,6 @@ public class CapacityScalingMinimumCostFlow<V, E>
             } else if (node == opposite) {
                 throw new IllegalArgumentException("Self-loops aren't allowed");
             }
-            // remove non-zero lower capacity
-            node.excess -= lowerCap;
-            opposite.excess += lowerCap;
-            if (cost < 0) {
-                // removing negative edge costs
-                node.excess -= upperCap - lowerCap;
-                opposite.excess += upperCap - lowerCap;
-                Node t = node;
-                node = opposite;
-                opposite = t;
-                cost *= -1;
-            }
-            arcs[i] = node.addArcTo(opposite, upperCap - lowerCap, cost);
             if (DEBUG) {
                 System.out.println(arcs[i]);
             }
@@ -375,6 +362,32 @@ public class CapacityScalingMinimumCostFlow<V, E>
             }
         }
     }
+
+	private <E> CapacityScalingMinimumCostFlow.Node opposite(Map<V, CapacityScalingMinimumCostFlow.Node> nodeMap,
+			Graph<V, E> graph, int i, E edge) {
+		Node node = nodeMap.get(graph.getEdgeSource(edge));
+		Node opposite = nodeMap.get(graph.getEdgeTarget(edge));
+		int upperCap = 0; //problem.getArcCapacityUpperBounds().apply(edge);
+		int lowerCap = 0; //problem.getArcCapacityLowerBounds().apply(edge);
+		double cost = graph.getEdgeWeight(edge);
+		node(i, node, opposite, upperCap, lowerCap, cost);
+		return opposite;
+	}
+
+	private void node(int i, CapacityScalingMinimumCostFlow.Node node, CapacityScalingMinimumCostFlow.Node opposite,
+			int upperCap, int lowerCap, double cost) {
+		node.excess -= lowerCap;
+		opposite.excess += lowerCap;
+		if (cost < 0) {
+			node.excess -= upperCap - lowerCap;
+			opposite.excess += upperCap - lowerCap;
+			Node t = node;
+			node = opposite;
+			opposite = t;
+			cost *= -1;
+		}
+		arcs[i] = node.addArcTo(opposite, upperCap - lowerCap, cost);
+	}
 
     /**
      * Returns the largest magnitude of any supply/demand or finite arc capacity.

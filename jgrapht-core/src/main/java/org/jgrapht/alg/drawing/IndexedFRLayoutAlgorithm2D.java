@@ -140,9 +140,8 @@ public class IndexedFRLayoutAlgorithm2D<V, E>
         // compute displacement with index
         Map<V, Point2D> disp = new HashMap<>();
         for (V v : graph.vertexSet()) {
-            Point2D vPos = Points.subtract(model.get(v), origin);
-            Point2D vDisp = Point2D.of(0d, 0d);
-
+            Point2D vDisp = vDisp(model, origin, v);
+			Point2D vPos = Points.subtract(model.get(v), origin);
             Deque<Node> queue = new ArrayDeque<>();
             queue.add(quadTree.getRoot());
 
@@ -151,12 +150,10 @@ public class IndexedFRLayoutAlgorithm2D<V, E>
                 Box2D box = node.getBox();
                 double boxWidth = box.getWidth();
 
-                Point2D uPos = null;
                 if (node.isLeaf()) {
                     if (!node.hasPoints()) {
                         continue;
                     }
-                    uPos = Points.subtract(node.getPoints().iterator().next(), origin);
                 } else {
                     double distanceToCentroid =
                         Points.length(Points.subtract(vPos, node.getCentroid()));
@@ -164,7 +161,6 @@ public class IndexedFRLayoutAlgorithm2D<V, E>
                         savedComparisons += node.getNumberOfPoints() - 1;
                         continue;
                     } else if (comparator.compare(boxWidth / distanceToCentroid, theta) < 0) {
-                        uPos = Points.subtract(node.getCentroid(), origin);
                         savedComparisons += node.getNumberOfPoints() - 1;
                     } else {
                         for (Node child : node.getChildren()) {
@@ -173,22 +169,47 @@ public class IndexedFRLayoutAlgorithm2D<V, E>
                         continue;
                     }
                 }
-
-                if (comparator.compare(vPos.getX(), uPos.getX()) != 0
-                    || comparator.compare(vPos.getY(), uPos.getY()) != 0)
-                {
-                    Point2D delta = Points.subtract(vPos, uPos);
-                    double deltaLen = Points.length(delta);
-                    Point2D dispContribution =
-                        Points.scalarMultiply(delta, repulsiveForce(deltaLen) / deltaLen);
-                    vDisp = Points.add(vDisp, dispContribution);
-                }
             }
 
             disp.put(v, vDisp);
         }
         return disp;
     }
+
+	private <V> Point2D vDisp(LayoutModel2D<V> model, Point2D origin, V v) {
+		Point2D vPos = Points.subtract(model.get(v), origin);
+		Point2D vDisp = Point2D.of(0d, 0d);
+		Deque<Node> queue = new ArrayDeque<>();
+		while (!queue.isEmpty()) {
+			Node node = queue.removeFirst();
+			Box2D box = node.getBox();
+			double boxWidth = box.getWidth();
+			Point2D uPos = null;
+			if (node.isLeaf()) {
+				if (!node.hasPoints()) {
+					continue;
+				}
+				uPos = Points.subtract(node.getPoints().iterator().next(), origin);
+			} else {
+				double distanceToCentroid = Points.length(Points.subtract(vPos, node.getCentroid()));
+				if (comparator.compare(distanceToCentroid, 0d) == 0) {
+					continue;
+				} else if (comparator.compare(boxWidth / distanceToCentroid, theta) < 0) {
+					uPos = Points.subtract(node.getCentroid(), origin);
+				} else {
+					continue;
+				}
+			}
+			if (comparator.compare(vPos.getX(), uPos.getX()) != 0
+					|| comparator.compare(vPos.getY(), uPos.getY()) != 0) {
+				Point2D delta = Points.subtract(vPos, uPos);
+				double deltaLen = Points.length(delta);
+				Point2D dispContribution = Points.scalarMultiply(delta, repulsiveForce(deltaLen) / deltaLen);
+				vDisp = Points.add(vDisp, dispContribution);
+			}
+		}
+		return vDisp;
+	}
 
     /**
      * Get the total number of saved comparisons due to the Barnes-Hut technique.
