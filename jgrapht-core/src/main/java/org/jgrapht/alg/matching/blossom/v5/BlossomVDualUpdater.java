@@ -97,10 +97,8 @@ class BlossomVDualUpdater<V, E>
      */
     public double updateDuals(BlossomVOptions.DualUpdateStrategy type)
     {
-        long start = System.nanoTime();
-
-        BlossomVEdge augmentEdge = null;
-        if (KolmogorovWeightedPerfectMatching.DEBUG) {
+        BlossomVEdge augmentEdge = augmentEdge(type);
+		if (KolmogorovWeightedPerfectMatching.DEBUG) {
             System.out.println("Start updating duals");
         }
         // go through all tree roots and determine the initial tree dual change wrt. in-tree
@@ -113,12 +111,6 @@ class BlossomVDualUpdater<V, E>
             double eps = tree.getEps();
             tree.accumulatedEps = eps - tree.eps;
         }
-        if (type == MULTIPLE_TREE_FIXED_DELTA) {
-            augmentEdge = multipleTreeFixedDelta();
-        } else if (type == MULTIPLE_TREE_CONNECTED_COMPONENTS) {
-            augmentEdge = updateDualsConnectedComponents();
-        }
-
         double dualChange = 0;
         // add tree.accumulatedEps to the tree.eps
         for (BlossomVNode root = state.nodes[state.nodeNum].treeSiblingNext; root != null;
@@ -137,12 +129,23 @@ class BlossomVDualUpdater<V, E>
                     .println("Updating duals: now eps of " + root.tree + " is " + (root.tree.eps));
             }
         }
-        state.statistics.dualUpdatesTime += System.nanoTime() - start;
         if (augmentEdge != null) {
             primalUpdater.augment(augmentEdge);
         }
         return dualChange;
     }
+
+	private BlossomVEdge augmentEdge(BlossomVOptions.DualUpdateStrategy type) {
+		long start = System.nanoTime();
+		BlossomVEdge augmentEdge = null;
+		if (type == MULTIPLE_TREE_FIXED_DELTA) {
+			augmentEdge = multipleTreeFixedDelta();
+		} else if (type == MULTIPLE_TREE_CONNECTED_COMPONENTS) {
+			augmentEdge = updateDualsConnectedComponents();
+		}
+		state.statistics.dualUpdatesTime += System.nanoTime() - start;
+		return augmentEdge;
+	}
 
     /**
      * Updates the duals of the single tree. This method takes into account both in-tree and

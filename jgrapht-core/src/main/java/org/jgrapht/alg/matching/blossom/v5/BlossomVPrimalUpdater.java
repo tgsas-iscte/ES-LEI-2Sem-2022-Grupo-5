@@ -318,9 +318,8 @@ class BlossomVPrimalUpdater<V, E>
         }
         long start = System.nanoTime();
 
-        BlossomVTree tree = blossom.tree;
-        double eps = tree.eps;
-        blossom.dual -= eps;
+        BlossomVNode.IncidentEdgeIterator iterator = iterator(blossom);
+		BlossomVTree tree = blossom.tree;
         blossom.tree.removeMinusBlossom(blossom); // it doesn't belong to the tree no more
 
         BlossomVNode branchesEndpoint =
@@ -343,15 +342,6 @@ class BlossomVPrimalUpdater<V, E>
 
         // move all edge from blossom to penultimate children
         blossom.removeFromChildList();
-        for (BlossomVNode.IncidentEdgeIterator iterator = blossom.incidentEdgesIterator();
-            iterator.hasNext();)
-        {
-            BlossomVEdge edge = iterator.next();
-            BlossomVNode penultimateChild = edge.headOriginal[1 - iterator.getDir()]
-                .getPenultimateBlossomAndFixBlossomGrandparent();
-            edge.moveEdgeTail(blossom, penultimateChild);
-        }
-
         // reverse the circular blossomSibling references so that the first branch in even branch
         if (!forwardDirection(blossomRoot, branchesEndpoint)) {
             reverseBlossomSiblings(blossomRoot);
@@ -385,6 +375,19 @@ class BlossomVPrimalUpdater<V, E>
         }
 
     }
+
+	private BlossomVNode.IncidentEdgeIterator iterator(BlossomVNode blossom) {
+		BlossomVTree tree = blossom.tree;
+		double eps = tree.eps;
+		blossom.dual -= eps;
+		for (BlossomVNode.IncidentEdgeIterator iterator = blossom.incidentEdgesIterator(); iterator.hasNext();) {
+			BlossomVEdge edge = iterator.next();
+			BlossomVNode penultimateChild = edge.headOriginal[1 - iterator.getDir()]
+					.getPenultimateBlossomAndFixBlossomGrandparent();
+			edge.moveEdgeTail(blossom, penultimateChild);
+		}
+		return iterator(null);
+	}
 
     /**
      * Processes a minus node in the grow operation. Applies lazy delta spreading, adds new (-,+)
@@ -717,35 +720,7 @@ class BlossomVPrimalUpdater<V, E>
                 for (BlossomVNode.IncidentEdgeIterator incidentEdgeIterator =
                     node.incidentEdgesIterator(); incidentEdgeIterator.hasNext();)
                 {
-                    BlossomVEdge edge = incidentEdgeIterator.next();
-                    int dir = incidentEdgeIterator.getDir();
-                    BlossomVNode opposite = edge.head[dir];
-                    BlossomVTree oppositeTree = opposite.tree;
-                    if (node.isPlusNode()) {
-                        edge.slack -= eps;
-                        if (oppositeTree != null && oppositeTree != tree) {
-                            // if this edge is a cross-tree edge
-                            BlossomVTreeEdge treeEdge = oppositeTree.currentEdge;
-                            if (opposite.isPlusNode()) {
-                                // this is a (+,+) cross-tree edge
-                                treeEdge.removeFromPlusPlusHeap(edge);
-                                oppositeTree.addPlusInfinityEdge(edge);
-                            } else if (opposite.isMinusNode()) {
-                                // this is a (+,-) cross-tree edge
-                                treeEdge.removeFromCurrentPlusMinusHeap(edge);
-                            }
-                        }
-                    } else {
-                        // current node is a "-" node
-                        edge.slack += eps;
-                        if (oppositeTree != null && oppositeTree != tree && opposite.isPlusNode()) {
-                            // this is a (-,+) cross-tree edge
-                            BlossomVTreeEdge treeEdge = oppositeTree.currentEdge;
-                            treeEdge.removeFromCurrentMinusPlusHeap(edge);
-                            oppositeTree.addPlusInfinityEdge(edge);
-                        }
-
-                    }
+                    BlossomVEdge edge = edge(tree, eps, node, incidentEdgeIterator);
                 }
                 node.label = INFINITY;
             } else {
@@ -790,6 +765,34 @@ class BlossomVPrimalUpdater<V, E>
 
         state.treeNum--;
     }
+
+	private BlossomVEdge edge(BlossomVTree tree, double eps, BlossomVNode node,
+			BlossomVNode.IncidentEdgeIterator incidentEdgeIterator) {
+		BlossomVEdge edge = incidentEdgeIterator.next();
+		int dir = incidentEdgeIterator.getDir();
+		BlossomVNode opposite = edge.head[dir];
+		BlossomVTree oppositeTree = opposite.tree;
+		if (node.isPlusNode()) {
+			edge.slack -= eps;
+			if (oppositeTree != null && oppositeTree != tree) {
+				BlossomVTreeEdge treeEdge = oppositeTree.currentEdge;
+				if (opposite.isPlusNode()) {
+					treeEdge.removeFromPlusPlusHeap(edge);
+					oppositeTree.addPlusInfinityEdge(edge);
+				} else if (opposite.isMinusNode()) {
+					treeEdge.removeFromCurrentPlusMinusHeap(edge);
+				}
+			}
+		} else {
+			edge.slack += eps;
+			if (oppositeTree != null && oppositeTree != tree && opposite.isPlusNode()) {
+				BlossomVTreeEdge treeEdge = oppositeTree.currentEdge;
+				treeEdge.removeFromCurrentMinusPlusHeap(edge);
+				oppositeTree.addPlusInfinityEdge(edge);
+			}
+		}
+		return edge;
+	}
 
     /**
      * Updates the tree structure in the shrink operation. Moves the endpoints of the boundary edges
