@@ -93,15 +93,8 @@ public class BarycenterGreedyTwoLayeredBipartiteLayout2D<V, E>
                 // singleton
                 order.put(v, Pair.of(-Double.MAX_VALUE, i));
             } else {
-                double barycenter = 0d;
-                for (E e : graph.outgoingEdgesOf(v)) {
-                    V u = Graphs.getOppositeVertex(graph, e, v);
-                    Point2D p2d = model.get(u);
-                    double coord = vertical ? p2d.getX() : p2d.getY();
-                    barycenter += coord;
-                }
-                barycenter /= degree;
-                order.put(v, Pair.of(barycenter, i));
+                double barycenter = barycenter(graph, model, v, degree);
+				order.put(v, Pair.of(barycenter, i));
             }
             i++;
         }
@@ -133,5 +126,17 @@ public class BarycenterGreedyTwoLayeredBipartiteLayout2D<V, E>
         partition.sort(newOrderComparator);
         super.drawSecondPartition(graph, partition, model);
     }
+
+	private <V, E> double barycenter(Graph<V, E> graph, LayoutModel2D<V> model, V v, int degree) {
+		double barycenter = 0d;
+		for (E e : graph.outgoingEdgesOf(v)) {
+			V u = Graphs.getOppositeVertex(graph, e, v);
+			Point2D p2d = model.get(u);
+			double coord = vertical ? p2d.getX() : p2d.getY();
+			barycenter += coord;
+		}
+		barycenter /= degree;
+		return barycenter;
+	}
 
 }

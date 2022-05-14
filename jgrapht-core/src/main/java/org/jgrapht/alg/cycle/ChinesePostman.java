@@ -207,9 +207,10 @@ public class ChinesePostman<V, E>
         Set<Integer> postImbalancedPartition = new HashSet<>();
         Integer vertex = 0;
 
-        for (V v : negImbalancedVertices) {
+        auxGraph(imbalancedVertices, negImbalancedVertices, postImbalancedVertices, shortestPaths, auxGraph,
+				duplicateMap, negImbalancedPartition, postImbalancedPartition, vertex);
+		for (V v : negImbalancedVertices) {
             for (int i = 0; i < imbalancedVertices.get(v); i++) {
-                auxGraph.addVertex(vertex);
                 duplicateMap.add(v);
                 negImbalancedPartition.add(vertex);
                 vertex++;
@@ -217,20 +218,12 @@ public class ChinesePostman<V, E>
         }
         for (V v : postImbalancedVertices) {
             for (int i = 0; i < imbalancedVertices.get(v); i++) {
-                auxGraph.addVertex(vertex);
                 duplicateMap.add(v);
                 postImbalancedPartition.add(vertex);
                 vertex++;
             }
         }
 
-        for (Integer i : negImbalancedPartition) {
-            for (Integer j : postImbalancedPartition) {
-                V u = duplicateMap.get(i);
-                V v = duplicateMap.get(j);
-                Graphs.addEdge(auxGraph, i, j, shortestPaths.get(new Pair<>(u, v)).getWeight());
-            }
-        }
         MatchingAlgorithm.Matching<Integer, DefaultWeightedEdge> matching =
             new KuhnMunkresMinimalWeightBipartitePerfectMatching<>(
                 auxGraph, negImbalancedPartition, postImbalancedPartition).getMatching();
@@ -258,6 +251,31 @@ public class ChinesePostman<V, E>
 
         return replaceShortcutEdges(graph, pathWithShortcuts, shortcutEdges);
     }
+
+	private void auxGraph(Map<V, Integer> imbalancedVertices, Set<V> negImbalancedVertices,
+			Set<V> postImbalancedVertices, Map<Pair<V, V>, GraphPath<V, E>> shortestPaths,
+			Graph<Integer, DefaultWeightedEdge> auxGraph, List<V> duplicateMap, Set<Integer> negImbalancedPartition,
+			Set<Integer> postImbalancedPartition, Integer vertex) {
+		for (V v : negImbalancedVertices) {
+			for (int i = 0; i < imbalancedVertices.get(v); i++) {
+				auxGraph.addVertex(vertex);
+				vertex++;
+			}
+		}
+		for (V v : postImbalancedVertices) {
+			for (int i = 0; i < imbalancedVertices.get(v); i++) {
+				auxGraph.addVertex(vertex);
+				vertex++;
+			}
+		}
+		for (Integer i : negImbalancedPartition) {
+			for (Integer j : postImbalancedPartition) {
+				V u = duplicateMap.get(i);
+				V v = duplicateMap.get(j);
+				Graphs.addEdge(auxGraph, i, j, shortestPaths.get(new Pair<>(u, v)).getWeight());
+			}
+		}
+	}
 
     private GraphPath<V, E> replaceShortcutEdges(
         Graph<V, E> inputGraph, GraphPath<V, E> pathWithShortcuts,

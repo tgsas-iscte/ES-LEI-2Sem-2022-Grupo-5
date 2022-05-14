@@ -127,14 +127,8 @@ public class TarjanSimpleCycles<V, E>
             } else if (comparison == 0) {
                 foundCycle = true;
                 List<V> cycle = new ArrayList<>();
-                Iterator<V> it = pointStack.descendingIterator();
-                V v;
-                while (it.hasNext()) {
-                    v = it.next();
-                    if (start.equals(v)) {
-                        break;
-                    }
-                }
+                V v = v(start);
+				Iterator<V> it = pointStack.descendingIterator();
                 cycle.add(start);
                 while (it.hasNext()) {
                     cycle.add(it.next());
@@ -156,6 +150,18 @@ public class TarjanSimpleCycles<V, E>
         pointStack.pop();
         return foundCycle;
     }
+
+	private <V> V v(V start) {
+		Iterator<V> it = (Iterator<V>) pointStack.descendingIterator();
+		V v = null;
+		while (it.hasNext()) {
+			v = it.next();
+			if (start.equals(v)) {
+				break;
+			}
+		}
+		return v;
+	}
 
     private void initState(Consumer<List<V>> consumer)
     {
