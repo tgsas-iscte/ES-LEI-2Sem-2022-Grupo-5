@@ -1,2 +1,3 @@
 module:org.jgrapht.core
 org.jgrapht
+org.jgrapht.alg
